@@ -18,7 +18,7 @@ export const Navbar = () => {
           <div className="w-9 h-9 bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-center justify-center text-teal-400">
             <Sparkles size={20} />
           </div>
-          <span className="font-bold text-slate-100 tracking-tight text-base">StudyAI</span>
+          <span className="font-bold text-slate-100 tracking-tight text-base">Zocesh Zocesh Study AI</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">

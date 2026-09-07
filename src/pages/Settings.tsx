@@ -15,24 +15,7 @@ const GOALS = [
 
 export default function Settings() {
   const { className, setClassName, goal, setGoal, subjects, setSubjects, theme, setTheme, toast } = useApp();
-  const [testing, setTesting] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<"unknown" | "ok" | "error">("unknown");
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  async function testConnection() {
-    setTesting(true);
-    toast("Testing Gemini connection…");
-    try {
-      const result = await Gemini.testConnection();
-      setConnectionStatus("ok");
-      toast(result.includes("successful") ? "Gemini connected ✓" : "Gemini responded ✓", "success");
-    } catch (err: any) {
-      setConnectionStatus("error");
-      toast(err?.message || "Gemini connection failed.", "error");
-    } finally {
-      setTesting(false);
-    }
-  }
 
   function toggleSubject(s: string) {
     const next = subjects.includes(s) ? subjects.filter((x) => x !== s) : [...subjects, s];
@@ -45,7 +28,7 @@ export default function Settings() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "studyai-progress.json";
+    a.download = "zocesh-study-ai-progress.json";
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
@@ -76,7 +59,7 @@ export default function Settings() {
     <div className="space-y-8">
       <div className="card">
         <span className="pill">Settings</span>
-        <h2 className="mt-3 font-display text-2xl font-bold">Make StudyAI yours.</h2>
+        <h2 className="mt-3 font-display text-2xl font-bold">Make Zocesh Study AI yours.</h2>
         <p className="mt-2 text-slate-400">
           Manage your class, subjects, AI connection, appearance and local study data.
         </p>
@@ -89,6 +72,9 @@ export default function Settings() {
             <div>
               <label className="mb-1 block text-xs text-slate-500">Class</label>
               <select className="select" value={className} onChange={(e) => setClassName(e.target.value as ClassName)}>
+                <option>JSS1</option>
+                <option>JSS2</option>
+                <option>JSS3</option>
                 <option>SS1</option>
                 <option>SS2</option>
                 <option>SS3</option>
@@ -154,9 +140,9 @@ export default function Settings() {
 
         <div className="card md:col-span-2">
           <h2 className="mb-2 font-display text-lg font-bold">About</h2>
-          <p className="font-semibold">StudyAI v2.0.0</p>
+          <p className="font-semibold">Zocesh Study AI</p>
           <p className="mt-1 text-slate-400">
-            A mobile-first SS1–SS3 Nigerian secondary-school study companion. Built with Vite, React, TypeScript and
+            A mobile-first Nigerian secondary-school study companion. Built with Vite, React, TypeScript and
             Tailwind CSS, deployable on Vercel with a secure serverless Gemini proxy.
           </p>
         </div>

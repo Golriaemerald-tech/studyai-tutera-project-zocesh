@@ -101,7 +101,7 @@ export default function Home() {
             Continue Learning
           </button>
           <button className="btn" onClick={() => navigate("/chat")}>
-            Ask StudyAI
+            Ask Zocesh Zocesh Study AI
           </button>
         </div>
       </div>

@@ -143,7 +143,7 @@ export default function Onboarding() {
             </div>
             <div className="mt-6 flex justify-end">
               <button className="btn btn-primary" onClick={finish}>
-                Enter StudyAI →
+                Enter Zocesh Zocesh Study AI →
               </button>
             </div>
           </div>

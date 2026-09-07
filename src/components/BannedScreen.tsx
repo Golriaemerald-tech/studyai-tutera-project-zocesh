@@ -12,7 +12,7 @@ export const BannedScreen = () => {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-red-400">Account Banned</h1>
-          <p className="text-sm text-slate-400 mt-1">Access to StudyAI has been restricted.</p>
+          <p className="text-sm text-slate-400 mt-1">Access to Zocesh Zocesh Study AI has been restricted.</p>
         </div>
 
         <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl text-left space-y-2">

@@ -1,3 +1,4 @@
+import { supabase } from '../lib/supabase';
 import { useState, useEffect, useRef, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth, GoogleCredentialResponse } from '../context/AuthContext';
@@ -56,20 +57,59 @@ export const Register = () => {
     };
   }, [googleLogin, navigate]);
 
-  const handleRegister = (e: FormEvent) => {
+  const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
-    const newUser = {
-      email,
-      name,
-      nickname: nickname || name,
-      picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${email}`,
-      studentClass,
-      department,
-      age: 17,
-    };
-    login(newUser);
-    navigate('/');
+    const { data, error: authError } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+        options: {
+          data: {
+            name,
+            nickname,
+            studentClass,
+            department,
+          },
+        },
+      });
+
+      if (authError) {
+        setError(authError.message);
+        return;
+      }
+
+      if (!data.user) {
+        setError('Account creation failed. Please try again.');
+        return;
+      }
+
+      const avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(
+        email.trim().toLowerCase()
+      )}`;
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: data.user.id,
+          email: data.user.email,
+          display_name: name || nickname || email.split('@')[0],
+          avatar_url: avatarUrl,
+          class_level: studentClass,
+          role: 'student',
+        });
+
+      if (profileError) {
+        console.error('Profile creation error:', profileError);
+      }
+
+      if (!data.session) {
+        setError(
+          'Account created! Please check your email to confirm your account, then sign in.'
+        );
+        return;
+      }
+
+      navigate('/');
   };
 
   return (
@@ -79,7 +119,7 @@ export const Register = () => {
           <div className="w-12 h-12 bg-teal-500/10 border border-teal-500/30 rounded-2xl flex items-center justify-center text-teal-400 mx-auto">
             <Sparkles size={24} />
           </div>
-          <h1 className="text-2xl font-bold text-slate-100">Create StudyAI Account</h1>
+          <h1 className="text-2xl font-bold text-slate-100">Create Zocesh Zocesh Study AI Account</h1>
           <p className="text-xs text-slate-400">Join your peers & AI Tutors</p>
         </div>
 

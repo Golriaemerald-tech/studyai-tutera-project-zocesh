@@ -41,7 +41,7 @@ const generateStudyResponse = async (
     const text = await ask(`Help the student thoroughly.\n\nStudent: ${prompt}`, {
       systemInstruction: buildTutorInstruction(profile, {
         subject: subjectContext,
-        persona: `You are StudyAI, an expert Nigerian curriculum tutor specialized in ${subjectContext}.`,
+        persona: `You are Zocesh Zocesh Study AI, an expert Nigerian curriculum tutor specialized in ${subjectContext}.`,
       }),
     });
     return text;
@@ -80,7 +80,7 @@ const LegacyLayout: React.FC = () => {
       <header className="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link to="/" className="text-lg font-bold bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-            StudyAI
+            Zocesh Zocesh Study AI
           </Link>
           <span className="text-[10px] bg-teal-500/10 text-teal-400 border border-teal-500/20 px-2 py-0.5 rounded-full font-medium">
             Nigeria Curriculum
@@ -234,7 +234,7 @@ const Login = () => {
           <div className="w-12 h-12 bg-teal-500/10 border border-teal-500/30 rounded-2xl flex items-center justify-center text-teal-400 mx-auto">
             <Sparkles size={24} />
           </div>
-          <h1 className="text-2xl font-bold text-slate-100">Sign In to StudyAI</h1>
+          <h1 className="text-2xl font-bold text-slate-100">Sign In to Zocesh Zocesh Study AI</h1>
           <p className="text-xs text-slate-400">Google OAuth & Credentials Login</p>
         </div>
 
@@ -322,7 +322,7 @@ const Register = () => {
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6 shadow-2xl">
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold text-slate-100">Create StudyAI Account</h1>
+          <h1 className="text-2xl font-bold text-slate-100">Create Zocesh Zocesh Study AI Account</h1>
           <p className="text-xs text-slate-400">Join Nigerian scholars and ace your exams</p>
         </div>
 

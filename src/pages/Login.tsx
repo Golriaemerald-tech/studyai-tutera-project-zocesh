@@ -1,6 +1,7 @@
 import { useState, useEffect, FormEvent, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import { Sparkles, Mail, Lock, LogIn, Globe } from 'lucide-react';
 
 const GOOGLE_CLIENT_ID = '706971985194-qm8sivf0qquafuqf0pc9spgcdj65lv1k.apps.googleusercontent.com';
@@ -13,18 +14,25 @@ export const Login = () => {
   const navigate = useNavigate();
   const googleButtonRef = useRef<HTMLDivElement>(null);
 
-  const handleLogin = (e: FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
-    const allUsers = JSON.parse(localStorage.getItem('studyai_all_users') || '{}');
-    const foundUser = allUsers[identifier] || Object.values(allUsers).find((u: any) => u.nickname === identifier);
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: identifier.trim().toLowerCase(),
+        password,
+      });
 
-    if (!foundUser) {
-      setError('Account not found. Please register first.');
-      return;
-    }
-    login(foundUser);
-    navigate('/');
+      if (authError) {
+        setError(authError.message);
+        return;
+      }
+
+      if (!data.user) {
+        setError('Sign in failed. Please try again.');
+        return;
+      }
+
+      navigate('/');
   };
 
   useEffect(() => {
@@ -59,7 +67,7 @@ export const Login = () => {
           <div className="w-12 h-12 bg-teal-500/10 border border-teal-500/30 rounded-2xl flex items-center justify-center text-teal-400 mx-auto">
             <Sparkles size={24} />
           </div>
-          <h1 className="text-2xl font-bold text-slate-100">Sign In to StudyAI</h1>
+          <h1 className="text-2xl font-bold text-slate-100">Sign In to Zocesh Zocesh Study AI</h1>
           <p className="text-xs text-slate-400">Google OAuth & Credentials Login</p>
         </div>
 

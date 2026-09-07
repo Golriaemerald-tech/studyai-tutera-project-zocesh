@@ -1,7 +1,16 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Sparkles, Send, Volume2, VolumeX } from 'lucide-react';
 import { renderMarkdown } from '../lib/markdown';
+import {
+  ChatConversation,
+  ChatMessage,
+  createConversation,
+  getConversations,
+  getMessages,
+  addMessage,
+  updateConversation,
+} from '../lib/chatHistory';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -14,31 +23,168 @@ export const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: `Welcome back, ${user?.nickname || user?.name || 'Student'}! 👋 I'm your StudyAI Tutor. What would you like to learn today?`,
+      content: `Welcome back, ${user?.nickname || user?.name || 'Student'}! 👋 I'm your Zocesh Zocesh Study AI Tutor. What would you like to learn today?`,
     },
   ]);
 
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [speaking, setSpeaking] = useState<number | null>(null);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const [conversations, setConversations] = useState<ChatConversation[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    let active = true;
+
+    const loadHistory = async () => {
+      try {
+        setHistoryLoading(true);
+
+        const chats = await getConversations(user.id);
+
+        if (!active) return;
+
+        setConversations(chats);
+
+        if (chats.length > 0) {
+          const latest = chats[0];
+          const savedMessages = await getMessages(latest.id);
+
+          if (!active) return;
+
+          setConversationId(latest.id);
+
+          if (savedMessages.length > 0) {
+            setMessages(
+              savedMessages.map((message: ChatMessage) => ({
+                role: message.role === 'user' ? 'user' : 'assistant',
+                content: message.content,
+              }))
+            );
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load chat history:', error);
+      } finally {
+        if (active) setHistoryLoading(false);
+      }
+    };
+
+    loadHistory();
+
+    return () => {
+      <div className="mb-4 flex gap-2">
+        <select
+          value={conversationId || ''}
+          onChange={(e) => {
+            const selected = conversations.find(
+              (chat) => chat.id === e.target.value
+            );
+            if (selected) openConversation(selected);
+          }}
+          disabled={historyLoading || loading}
+          className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none"
+        >
+          <option value="">
+            {historyLoading ? 'Loading chats...' : 'Previous chats'}
+          </option>
+          {conversations.map((chat) => (
+            <option key={chat.id} value={chat.id}>
+              {chat.title || 'New chat'}
+            </option>
+          ))}
+        </select>
+
+        <button
+          type="button"
+          onClick={startNewChat}
+          disabled={loading}
+          className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10 disabled:opacity-50"
+        >
+          + New Chat
+        </button>
+      </div>
+      active = false;
+    };
+  }, [user?.id]);
+
+  async function openConversation(chat: ChatConversation) {
+    if (loading || historyLoading) return;
+
+    try {
+      setHistoryLoading(true);
+      const savedMessages = await getMessages(chat.id);
+
+      setConversationId(chat.id);
+      setMessages(
+        savedMessages.length > 0
+          ? savedMessages.map((message: ChatMessage) => ({
+              role: message.role === 'user' ? 'user' : 'assistant',
+              content: message.content,
+            }))
+          : [
+              {
+                role: 'assistant',
+                content: `This is a new conversation, sir. How can I help you?`,
+              },
+            ]
+      );
+    } catch (error) {
+      console.error('Failed to open conversation:', error);
+    } finally {
+      setHistoryLoading(false);
+    }
+  }
+
+  function startNewChat() {
+    if (loading) return;
+
+    setConversationId(null);
+    setMessages([
+      {
+        role: 'assistant',
+        content: `New chat started, sir. What would you like to study?`,
+      },
+    ]);
+  }
 
   async function handleSend(e: FormEvent) {
     e.preventDefault();
 
     const prompt = input.trim();
-    if (!prompt || loading) return;
+    if (!prompt || loading || !user?.id) return;
 
     setInput('');
-
-    const nextMessages: Message[] = [
-      ...messages,
-      { role: 'user', content: prompt },
-    ];
-
-    setMessages(nextMessages);
     setLoading(true);
 
     try {
+      let activeConversationId = conversationId;
+
+      if (!activeConversationId) {
+        const conversation = await createConversation(user.id, {
+          title: prompt.slice(0, 60),
+          model: 'Gemini',
+          classLevel: user.studentClass,
+        });
+
+        activeConversationId = conversation.id;
+        setConversationId(conversation.id);
+        setConversations((prev) => [conversation, ...prev]);
+      }
+
+      const nextMessages: Message[] = [
+        ...messages,
+        { role: 'user', content: prompt },
+      ];
+
+      setMessages(nextMessages);
+
+      await addMessage(activeConversationId, 'user', prompt, user.id);
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -47,11 +193,11 @@ export const Chat = () => {
         body: JSON.stringify({
           prompt,
           systemInstruction: `
-You are STUDYAI, a patient Nigerian secondary-school tutor.
+You are ZOCESH STUDY AI, a patient Nigerian secondary-school tutor.
 
-Student name: ${user?.nickname || user?.name || 'Student'}
-Student class: ${user?.studentClass || 'SS 3'}
-Department: ${user?.department || 'Science'}
+Student name: ${user.nickname || user.name || 'Student'}
+Student class: ${user.studentClass || 'SS3'}
+Department: ${user.department || 'Science'}
 
 Teach at the student's level.
 Address the student naturally as "sir".
@@ -81,6 +227,25 @@ Keep explanations educational, clear and age-appropriate.
         ...prev,
         { role: 'assistant', content: answer },
       ]);
+
+      await addMessage(activeConversationId, 'assistant', answer);
+
+      await updateConversation(activeConversationId, {
+        title: messages.length <= 1 ? prompt.slice(0, 60) : undefined,
+      });
+
+      setConversations((prev) =>
+        prev.map((chat) =>
+          chat.id === activeConversationId
+            ? {
+                ...chat,
+                title:
+                  messages.length <= 1 ? prompt.slice(0, 60) : chat.title,
+                updated_at: new Date().toISOString(),
+              }
+            : chat
+        )
+      );
     } catch (error) {
       console.error('Tutor AI error:', error);
 
@@ -89,13 +254,24 @@ Keep explanations educational, clear and age-appropriate.
         {
           role: 'assistant',
           content:
-            'Sorry sir, I could not reach Tutor AI right now. Please check your Gemini configuration and try again.',
+            'Sorry sir, I could not save or reach Tutor AI right now. Please try again.',
         },
       ]);
     } finally {
       setLoading(false);
     }
   }
+
+  function stopSpeaking() {
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+      setAudio(null);
+    }
+
+    setSpeaking(null);
+  }
+
 
   async function speak(text: string, index: number) {
     if (speaking !== null) return;
@@ -189,13 +365,17 @@ Keep explanations educational, clear and age-appropriate.
                 {message.role === 'assistant' && (
                   <button
                     type="button"
-                    onClick={() => speak(message.content, index)}
+                    onClick={() =>
+                      speaking === index
+                        ? stopSpeaking()
+                        : speak(message.content, index)
+                    }
                     className="mt-3 inline-flex items-center gap-2 rounded-lg border border-surface-border px-3 py-1.5 text-xs hover:border-brand-400/60"
                   >
                     {speaking === index ? (
                       <>
                         <VolumeX size={14} />
-                        Speaking...
+                        Stop
                       </>
                     ) : (
                       <>

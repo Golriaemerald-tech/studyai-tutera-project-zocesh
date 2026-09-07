@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
 
-export const SUPER_ADMIN_EMAIL = 'embelmpklet@gmail.com';
+export const OWNER_EMAIL = 'embelmpk@gmail.com';
+export const SUPER_ADMIN_EMAIL = 'embelmpk@gmail.com';
+export const SUPER_ADMIN_EMAILS = [
+  'uceebel@gmail.com',
+  'emblemcreativeservices@gmail.com',
+];
 
 export interface User {
   id: string;
@@ -65,18 +71,66 @@ export interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(() => {
-    try {
-      const saved = localStorage.getItem('studyai_current_user');
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
-  
-  const [bannedList, setBannedList] = useState<BanRecord[]>([]);
-  const [adminList, setAdminList] = useState<string[]>([SUPER_ADMIN_EMAIL]);
+const getStoredBans = (): BanRecord[] => {
+  try {
+    return JSON.parse(localStorage.getItem('studyai_banned_users') || '[]');
+  } catch {
+    return [];
+  }
+};
+
+const getStoredAdmins = (): string[] => {
+  try {
+    return JSON.parse(localStorage.getItem('studyai_admin_list') || '[]');
+  } catch {
+    return [];
+  }
+};
+
+const roleForEmail = (email: string, role?: string): User['role'] => {
+  const normalized = email.toLowerCase();
+
+  if (normalized === OWNER_EMAIL) return 'superadmin';
+  if (SUPER_ADMIN_EMAILS.includes(normalized)) return 'superadmin';
+  if (role === 'admin' || role === 'superadmin') return role;
+  return 'user';
+};
+
+const profileToUser = (profile: any, authUser: any): User => ({
+  id: authUser.id,
+  email: authUser.email || profile?.email || '',
+  name:
+    profile?.display_name ||
+    authUser.user_metadata?.name ||
+    authUser.email?.split('@')[0] ||
+    'Student',
+  nickname:
+    authUser.user_metadata?.nickname ||
+    profile?.display_name ||
+    undefined,
+  picture:
+    profile?.avatar_url ||
+    authUser.user_metadata?.picture ||
+    `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(
+      authUser.email || authUser.id
+    )}`,
+  studentClass:
+    profile?.class_level ||
+    authUser.user_metadata?.studentClass ||
+    'SS3',
+  department:
+    authUser.user_metadata?.department ||
+    'Science',
+  age: authUser.user_metadata?.age || undefined,
+  role: roleForEmail(authUser.email || '', profile?.role),
+});
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [bannedList, setBannedList] = useState<BanRecord[]>(getStoredBans);
+  const [adminList, setAdminList] = useState<string[]>(getStoredAdmins);
   const [banRecord, setBanRecord] = useState<BanRecord | null>(null);
   const [error, setErrorState] = useState<string | null>(null);
 
@@ -84,151 +138,220 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setErrorState(err);
   };
 
-  const isSuperAdmin = user?.role === 'superadmin' || user?.email === SUPER_ADMIN_EMAIL;
-  const isAdmin = isSuperAdmin || adminList.includes(user?.email || '') || user?.role === 'admin';
-  
-  const currentBan = user ? bannedList.find(b => b.userId === user.id || b.email === user.email) || null : null;
+  const isSuperAdmin =
+    Boolean(user) &&
+    (user?.role === 'superadmin' ||
+      user?.email.toLowerCase() === OWNER_EMAIL ||
+      SUPER_ADMIN_EMAILS.includes(user?.email?.toLowerCase() || ''));
+
+  const isAdmin =
+    isSuperAdmin ||
+    adminList.includes(user?.email?.toLowerCase() || '') ||
+    user?.role === 'admin';
+
+  const currentBan = user
+    ? bannedList.find(
+        (ban) => ban.userId === user.id || ban.email === user.email
+      ) || null
+    : null;
+
   const isBanned = Boolean(currentBan);
 
   useEffect(() => {
     setBanRecord(currentBan);
+
     if (user) {
-      try {
-        localStorage.setItem('studyai_current_user', JSON.stringify(user));
-      } catch (e) {
-        console.error('Failed to save user session:', e);
-      }
+      localStorage.setItem('studyai_current_user', JSON.stringify(user));
     } else {
       localStorage.removeItem('studyai_current_user');
     }
   }, [user, currentBan]);
 
-  const decodeJwtResponse = (token: string): GoogleJwtPayload | null => {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split('')
-          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
-      );
-      return JSON.parse(jsonPayload) as GoogleJwtPayload;
-    } catch (e) {
-      console.error('Failed to parse Google JWT token:', e);
-      return null;
-    }
-  };
+  useEffect(() => {
+    localStorage.setItem('studyai_banned_users', JSON.stringify(bannedList));
+  }, [bannedList]);
 
-  const login = (userData: AuthInput) => {
-    if (!userData || (typeof userData === 'object' && 'nativeEvent' in userData)) {
-      return;
-    }
+  useEffect(() => {
+    localStorage.setItem('studyai_admin_list', JSON.stringify(adminList));
+  }, [adminList]);
 
-    if (!userData.email) {
-      setError('Invalid authentication data received.');
-      return;
-    }
+  useEffect(() => {
+    let mounted = true;
 
-    const emailVal = userData.email.toLowerCase();
-    const generatedId = userData.id || 'user-' + Math.random().toString(36).substring(2, 9);
+    const loadSession = async () => {
+      const { data } = await supabase.auth.getSession();
 
-    const enrichedUser: User = {
-      studentClass: userData.studentClass || 'SS 3',
-      department: userData.department || 'Science',
-      age: userData.age || 17,
-      picture: userData.picture || `https://api.dicebar.com/7.x/bottts/svg?seed=${emailVal}`,
-      ...userData,
-      id: generatedId,
-      email: emailVal,
-      name: userData.name || emailVal.split('@')[0],
-      password: userData.password,
-      role: emailVal === SUPER_ADMIN_EMAIL ? 'superadmin' : (userData.role || 'user'),
+      if (!mounted || !data.session?.user) return;
+
+      await loadProfile(data.session.user);
     };
 
-    setUser(enrichedUser);
-    setError(null);
-    try {
-      const allUsers = JSON.parse(localStorage.getItem('studyai_all_users') || '{}') as Record<string, User>;
-      allUsers[enrichedUser.email] = enrichedUser;
-      localStorage.setItem('studyai_all_users', JSON.stringify(allUsers));
-    } catch (e) {
-      console.error('Failed to update all_users storage:', e);
+    const loadProfile = async (authUser: any) => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', authUser.id)
+        .maybeSingle();
+
+      if (mounted) {
+        setUser(profileToUser(profile, authUser));
+      }
+    };
+
+    loadSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (!session?.user) {
+        if (mounted) setUser(null);
+        return;
+      }
+
+      await loadProfile(session.user);
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const login = (userData: AuthInput) => {
+    // Login is performed by Login.tsx through Supabase Auth.
+    // This keeps compatibility with existing app code.
+    if (userData?.id) {
+      setUser({
+        id: userData.id,
+        email: userData.email.toLowerCase(),
+        name: userData.name || userData.email.split('@')[0],
+        nickname: userData.nickname,
+        picture:
+          userData.picture ||
+          `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(
+            userData.email
+          )}`,
+        studentClass: userData.studentClass || 'SS3',
+        department: userData.department || 'Science',
+        age: userData.age,
+        role: roleForEmail(userData.email, userData.role),
+      });
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
     setBanRecord(null);
-    localStorage.removeItem('studyai_current_user');
   };
 
   const googleLogin = (credentialResponse: GoogleCredentialResponse) => {
-    const payload = decodeJwtResponse(credentialResponse.credential);
-    if (!payload) {
-      setError('Invalid Google sign-in credential.');
-      return;
-    }
-    login({
-      email: payload.email,
-      name: payload.name,
-      picture: payload.picture,
-    });
-  };
-
-  const banUser = (userId: string, reason: string) => {
-    const targetBan: BanRecord = {
-      userId,
-      email: `${userId}@placeholder.com`,
-      reason,
-      bannedAt: new Date().toISOString(),
-      bannedBy: user?.name || 'Administrator'
-    };
-    setBannedList(prev => [...prev, targetBan]);
-  };
-
-  const unbanUser = (userId: string) => {
-    setBannedList(prev => prev.filter(b => b.userId !== userId && b.email !== userId));
-  };
-
-  const toggleAdminRole = (email: string) => {
-    setAdminList(prev => 
-      prev.includes(email) ? prev.filter(e => e !== email) : [...prev, email]
+    setError(
+      'Google sign-in is being connected to Supabase Auth. Please use email and password for now.'
     );
   };
 
-  const getBannedUsers = (): BanRecord[] => {
-    return bannedList;
+  const banUser = (userId: string, reason: string) => {
+    const target = bannedList.find((ban) => ban.userId === userId);
+
+    const targetBan: BanRecord = {
+      userId,
+      email: target?.email || `${userId}@placeholder.com`,
+      reason,
+      bannedAt: new Date().toISOString(),
+      bannedBy: user?.name || 'Administrator',
+    };
+
+    setBannedList((prev) => [
+      ...prev.filter((ban) => ban.userId !== userId),
+      targetBan,
+    ]);
   };
 
-  const updateUserProfile = (updatedFields: Partial<User>) => {
+  const unbanUser = (userId: string) => {
+    if (!isSuperAdmin) {
+      setError('Only the Owner and Super Admins can unban users.');
+      return;
+    }
+
+    setBannedList((prev) =>
+      prev.filter((ban) => ban.userId !== userId && ban.email !== userId)
+    );
+  };
+
+  const toggleAdminRole = (email: string) => {
+    if (!isSuperAdmin) {
+      setError('Only the Owner and Super Admins can manage admin roles.');
+      return;
+    }
+
+    const normalized = email.toLowerCase();
+
+    setAdminList((prev) =>
+      prev.includes(normalized)
+        ? prev.filter((entry) => entry !== normalized)
+        : [...prev, normalized]
+    );
+  };
+
+  const getBannedUsers = () => bannedList;
+
+  const updateUserProfile = async (updatedFields: Partial<User>) => {
     if (!user) return;
+
     const updated = { ...user, ...updatedFields };
     setUser(updated);
+
+    const profileUpdate: Record<string, any> = {};
+
+    if (updatedFields.name !== undefined) {
+      profileUpdate.display_name = updatedFields.name;
+    }
+
+    if (updatedFields.picture !== undefined) {
+      profileUpdate.avatar_url = updatedFields.picture;
+    }
+
+    if (updatedFields.studentClass !== undefined) {
+      profileUpdate.class_level = updatedFields.studentClass;
+    }
+
+    if (Object.keys(profileUpdate).length) {
+      await supabase.from('profiles').update(profileUpdate).eq('id', user.id);
+    }
+
+    await supabase.auth.updateUser({
+      data: {
+        name: updated.name,
+        nickname: updated.nickname,
+        department: updated.department,
+        age: updated.age,
+      },
+    });
+  };
+
+  const value: AuthContextType = {
+    user,
+    isAdmin,
+    isSuperAdmin,
+    isBanned,
+    banRecord,
+    bannedList,
+    adminList,
+    login,
+    logout,
+    googleLogin,
+    banUser,
+    unbanUser,
+    toggleAdminRole,
+    getBannedUsers,
+    updateUserProfile,
+    error,
+    setError,
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAdmin,
-        isSuperAdmin,
-        isBanned,
-        banRecord,
-        bannedList,
-        adminList,
-        login,
-        logout,
-        googleLogin,
-        banUser,
-        unbanUser,
-        toggleAdminRole,
-        getBannedUsers,
-        updateUserProfile,
-        error,
-        setError,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
@@ -236,9 +359,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
+
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
+
   return context;
 };
 
