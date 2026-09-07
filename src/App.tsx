@@ -660,7 +660,6 @@ const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 // --- APP ROUTER ---
 export const App = () => {
   return (
-    <AuthProvider>
       <BrowserRouter>
         <Routes>
           {/* Authentication */}
@@ -800,7 +799,6 @@ export const App = () => {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
   );
 };
 
