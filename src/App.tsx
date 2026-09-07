@@ -3,6 +3,18 @@ import { BrowserRouter, Routes, Route, Outlet, Link, useNavigate, useLocation, N
 import { AuthProvider, useAuth, GoogleCredentialResponse, User } from './context/AuthContext';
 import { ask, GeminiError, buildTutorInstruction, type StudentProfile } from './lib/gemini';
 import { renderMarkdown } from './lib/markdown';
+import HomePage from './pages/Home';
+import Subjects from './pages/Subjects';
+import SubjectTopics from './pages/SubjectTopics';
+import StudyMode from './pages/StudyMode';
+import Flashcards from './pages/Flashcards';
+import Planner from './pages/Planner';
+import ProgressPage from './pages/ProgressPage';
+import Settings from './pages/Settings';
+import { OverseerAI } from './pages/OverseerAI';
+import { ChatArena } from './pages/ChatArena';
+import { Layout as AppLayout } from './components/Layout';
+
 import { 
   Home, MessageSquare, BookOpen, Award, Shield, User as UserIcon, LogOut, 
   Sparkles, Mail, Lock, LogIn, Globe, CheckCircle2, RefreshCw, Send, Users, Key 
@@ -37,7 +49,7 @@ const generateStudyResponse = async (
 };
 
 // --- LAYOUT & NAVIGATION BAR ---
-const Layout: React.FC = () => {
+const LegacyLayout: React.FC = () => {
   const { user, logout, isAdmin, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -651,16 +663,141 @@ export const App = () => {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Authentication */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route element={<Layout />}>
-            <Route path="/" element={<RequireAuth><HomeDashboard /></RequireAuth>} />
-            <Route path="/study" element={<RequireAuth><Study /></RequireAuth>} />
-            <Route path="/chat" element={<RequireAuth><ChatRooms /></RequireAuth>} />
-            <Route path="/leaderboard" element={<RequireAuth><Leaderboard /></RequireAuth>} />
-            <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
-            <Route path="/admin" element={<RequireAuth><AdminPanel /></RequireAuth>} />
+
+          {/* Main application */}
+          <Route element={<AppLayout />}>
+            <Route
+              path="/"
+              element={
+                <RequireAuth>
+                  <HomePage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/study"
+              element={
+                <RequireAuth>
+                  <StudyMode />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/study-mode"
+              element={
+                <RequireAuth>
+                  <StudyMode />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/subjects"
+              element={
+                <RequireAuth>
+                  <Subjects />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/subjects/:subject"
+              element={
+                <RequireAuth>
+                  <SubjectTopics />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/flashcards"
+              element={
+                <RequireAuth>
+                  <Flashcards />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/planner"
+              element={
+                <RequireAuth>
+                  <Planner />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/progress"
+              element={
+                <RequireAuth>
+                  <ProgressPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/leaderboard"
+              element={
+                <RequireAuth>
+                  <Leaderboard />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/chat"
+              element={
+                <RequireAuth>
+                  <ChatArena />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/profile"
+              element={
+                <RequireAuth>
+                  <Profile />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/settings"
+              element={
+                <RequireAuth>
+                  <Settings />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/overseer"
+              element={
+                <RequireAuth>
+                  <OverseerAI />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/admin"
+              element={
+                <RequireAuth>
+                  <AdminPanel />
+                </RequireAuth>
+              }
+            />
           </Route>
+
+          {/* Friendly fallbacks */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
