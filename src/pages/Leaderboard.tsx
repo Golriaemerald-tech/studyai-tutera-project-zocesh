@@ -14,7 +14,7 @@ export const Leaderboard = () => {
         <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
           <Trophy className="text-amber-400" /> Student Leaderboard
         </h1>
-        <p className="text-xs text-slate-400">Top performing students across Zocesh Zocesh Study AI based on quiz scores and daily streaks.</p>
+        <p className="text-xs text-slate-400">Top performing students across Zocesh StudyAI based on quiz scores and daily streaks.</p>
       </div>
 
       <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">

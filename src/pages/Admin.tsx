@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth, SUPER_ADMIN_EMAIL } from '../context/AuthContext';
+import { useAuth, SUPER_ADMIN_EMAILS } from '../context/AuthContext';
 import { Shield, UserX, UserCheck, AlertTriangle, Bot } from 'lucide-react';
 
 export const Admin = () => {
@@ -33,7 +33,7 @@ export const Admin = () => {
           <h1 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <Shield className="text-teal-400" /> Admin & AI Bots Control Center
           </h1>
-          <p className="text-xs text-slate-400">Super Admin: {SUPER_ADMIN_EMAIL}</p>
+          <p className="text-xs text-slate-400">Super Admin: {SUPER_ADMIN_EMAILS}</p>
         </div>
         <div className="bg-teal-500/10 border border-teal-500/30 px-4 py-2 rounded-2xl text-xs text-teal-300 font-semibold">
           {isSuperAdmin ? 'Super Administrator' : 'Administrator'}

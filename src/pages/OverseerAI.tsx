@@ -23,7 +23,7 @@ export const OverseerAI = () => {
     setScanResult('Analyzing chat records and system activity...');
     const result = await callGeminiAPI(
       "Perform a quick security and behavior check on active chat logs. Flag any policy violations or abusive behavior.",
-      "You are Sentinel AI, an overseer bot for Zocesh Zocesh Study AI platform moderation."
+      "You are Sentinel AI, an overseer bot for Zocesh StudyAI platform moderation."
     );
     setScanResult(result);
     setLoading(false);

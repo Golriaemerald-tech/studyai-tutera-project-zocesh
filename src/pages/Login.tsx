@@ -1,18 +1,13 @@
-import { useState, useEffect, FormEvent, useRef } from 'react';
+import { useState, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { Sparkles, Mail, Lock, LogIn, Globe } from 'lucide-react';
-
-const GOOGLE_CLIENT_ID = '706971985194-qm8sivf0qquafuqf0pc9spgcdj65lv1k.apps.googleusercontent.com';
 
 export const Login = () => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
-  const googleButtonRef = useRef<HTMLDivElement>(null);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -35,30 +30,19 @@ export const Login = () => {
       navigate('/');
   };
 
-  useEffect(() => {
-    if (window.google?.accounts?.id) {
-      try {
-        window.google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: (response: any) => {
-            googleLogin(response);
-            navigate('/');
-          },
-        });
+  const handleGoogleLogin = async () => {
+    setError('');
+    const { error: authError } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/login`,
+      },
+    });
 
-        if (googleButtonRef.current) {
-          window.google.accounts.id.renderButton(googleButtonRef.current, {
-            theme: 'filled_black',
-            size: 'large',
-            width: '100%',
-            text: 'signin_with',
-          });
-        }
-      } catch (err) {
-        console.error('Google SDK initialization error:', err);
-      }
+    if (authError) {
+      setError(authError.message);
     }
-  }, [googleLogin, navigate]);
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
@@ -67,7 +51,7 @@ export const Login = () => {
           <div className="w-12 h-12 bg-teal-500/10 border border-teal-500/30 rounded-2xl flex items-center justify-center text-teal-400 mx-auto">
             <Sparkles size={24} />
           </div>
-          <h1 className="text-2xl font-bold text-slate-100">Sign In to Zocesh Zocesh Study AI</h1>
+          <h1 className="text-2xl font-bold text-slate-100">Sign In to Zocesh StudyAI</h1>
           <p className="text-xs text-slate-400">Google OAuth & Credentials Login</p>
         </div>
 
@@ -113,15 +97,13 @@ export const Login = () => {
           <div className="flex-grow border-t border-slate-800"></div>
         </div>
 
-        {/* Official Google Sign-In Button Container */}
-        <div className="w-full flex justify-center overflow-hidden rounded-xl">
-          <div ref={googleButtonRef} className="w-full flex justify-center"></div>
-        </div>
-
-        <div className="p-3 bg-slate-950 border border-slate-800 rounded-2xl text-[11px] text-slate-400 space-y-1">
-          <p className="font-bold text-slate-300 flex items-center gap-1"><Globe size={12} className="text-teal-400" /> OAuth Redirect URL:</p>
-          <p>• <code className="text-teal-300">https://studyaituteraprojectzocesh.vercel.app</code></p>
-        </div>
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          className="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <Globe size={18} /> Continue with Google
+        </button>
 
         <p className="text-center text-xs text-slate-400">
           Don't have an account? <Link to="/register" className="text-teal-400 font-semibold hover:underline">Register</Link>

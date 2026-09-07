@@ -17,12 +17,13 @@ const GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models
 const PRIMARY_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
 const FALLBACK_CHAIN = [
   PRIMARY_MODEL,
+  "gemini-3.5-flash-lite",
   "gemini-2.5-flash-lite",
   "gemini-2.5-flash",
-  "gemini-2.0-flash-lite",
-  "gemini-2.0-flash",
-  "gemini-1.5-flash",
-  "gemini-1.5-flash-8b",
+  "gemini-3.5-flash",
+  "gemini-3.6-flash",
+  "gemini-3.7-flash",
+  "gemini-3.8-flash",
 ].filter((model, idx, arr) => arr.indexOf(model) === idx);
 
 // Errors worth retrying against the next model in the chain. A 400 (bad
@@ -79,7 +80,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         {
           text:
             body.systemInstruction ||
-            "You are STUDYAI, a patient Nigerian secondary-school tutor. Address the student naturally as sir.",
+            "You are Zocesh Study AI, a patient Nigerian secondary-school tutor. Address the student naturally and respectfully. Never use titles such as sir, ma, madam, or any gendered title unless the user explicitly asks you to.",
         },
       ],
     },

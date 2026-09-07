@@ -23,7 +23,7 @@ export const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: `Welcome back, ${user?.nickname || user?.name || 'Student'}! 👋 I'm your Zocesh Zocesh Study AI Tutor. What would you like to learn today?`,
+      content: `Welcome back, ${user?.nickname || user?.name || 'Student'}! 👋 I'm your Zocesh Study AI Tutor. What would you like to learn today?`,
     },
   ]);
 
@@ -77,37 +77,6 @@ export const Chat = () => {
     loadHistory();
 
     return () => {
-      <div className="mb-4 flex gap-2">
-        <select
-          value={conversationId || ''}
-          onChange={(e) => {
-            const selected = conversations.find(
-              (chat) => chat.id === e.target.value
-            );
-            if (selected) openConversation(selected);
-          }}
-          disabled={historyLoading || loading}
-          className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none"
-        >
-          <option value="">
-            {historyLoading ? 'Loading chats...' : 'Previous chats'}
-          </option>
-          {conversations.map((chat) => (
-            <option key={chat.id} value={chat.id}>
-              {chat.title || 'New chat'}
-            </option>
-          ))}
-        </select>
-
-        <button
-          type="button"
-          onClick={startNewChat}
-          disabled={loading}
-          className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10 disabled:opacity-50"
-        >
-          + New Chat
-        </button>
-      </div>
       active = false;
     };
   }, [user?.id]);
@@ -129,7 +98,7 @@ export const Chat = () => {
           : [
               {
                 role: 'assistant',
-                content: `This is a new conversation, sir. How can I help you?`,
+                content: `This is a new conversation. How can I help you?`,
               },
             ]
       );
@@ -147,7 +116,7 @@ export const Chat = () => {
     setMessages([
       {
         role: 'assistant',
-        content: `New chat started, sir. What would you like to study?`,
+        content: `New chat started. What would you like to study?`,
       },
     ]);
   }
@@ -200,7 +169,7 @@ Student class: ${user.studentClass || 'SS3'}
 Department: ${user.department || 'Science'}
 
 Teach at the student's level.
-Address the student naturally as "sir".
+Address the student naturally and respectfully. Never use sir, ma, madam, or other gendered titles.
 Explain answers clearly and step by step.
 For Mathematics and science, show the actual equations, numbers and working.
 Never invent random symbols or placeholder characters for mathematical notation.
@@ -221,7 +190,7 @@ Keep explanations educational, clear and age-appropriate.
       const answer =
         typeof data?.text === 'string' && data.text.trim()
           ? data.text.trim()
-          : 'I could not generate a response. Please try again, sir.';
+          : 'I could not generate a response. Please try again.';
 
       setMessages((prev) => [
         ...prev,
@@ -254,7 +223,7 @@ Keep explanations educational, clear and age-appropriate.
         {
           role: 'assistant',
           content:
-            'Sorry sir, I could not save or reach Tutor AI right now. Please try again.',
+            'I could not reach Tutor AI right now. Please try again.',
         },
       ]);
     } finally {
@@ -315,6 +284,37 @@ Keep explanations educational, clear and age-appropriate.
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+        <select
+          value={conversationId || ''}
+          onChange={(e) => {
+            const selected = conversations.find(
+              (chat) => chat.id === e.target.value
+            );
+            if (selected) openConversation(selected);
+          }}
+          disabled={historyLoading || loading}
+          className="min-w-0 flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none transition focus:border-brand-400 disabled:opacity-50"
+        >
+          <option value="">
+            {historyLoading ? 'Loading chats...' : 'Previous chats'}
+          </option>
+          {conversations.map((chat) => (
+            <option key={chat.id} value={chat.id}>
+              {chat.title || 'New chat'}
+            </option>
+          ))}
+        </select>
+
+        <button
+          type="button"
+          onClick={startNewChat}
+          disabled={loading}
+          className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:-translate-y-0.5 hover:bg-white/10 disabled:opacity-50"
+        >
+          + New Chat
+        </button>
+      </div>
       <div className="card">
         <span className="pill flex w-fit items-center gap-2">
           <Sparkles size={14} />
@@ -392,7 +392,7 @@ Keep explanations educational, clear and age-appropriate.
           {loading && (
             <div className="flex justify-start">
               <div className="rounded-2xl bg-surface-raised border border-surface-border/60 px-4 py-3 text-sm text-slate-400">
-                Tutor AI is thinking, sir...
+                Tutor AI is thinking...
               </div>
             </div>
           )}

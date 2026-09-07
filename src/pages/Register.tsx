@@ -1,10 +1,7 @@
 import { supabase } from '../lib/supabase';
-import { useState, useEffect, useRef, FormEvent } from 'react';
+import { useState, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth, GoogleCredentialResponse } from '../context/AuthContext';
 import { Sparkles, Mail, Lock, User, UserPlus, Globe } from 'lucide-react';
-
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '706971985194-qm8sivf0qquafuqf0pc9spgcdj65lv1k.apps.googleusercontent.com';
 
 export const Register = () => {
   const [email, setEmail] = useState('');
@@ -14,48 +11,21 @@ export const Register = () => {
   const [studentClass, setStudentClass] = useState('SS 3');
   const [department, setDepartment] = useState('Science');
   const [error, setError] = useState('');
-  const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
-  const googleButtonRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    const init = () => {
-      if (!window.google?.accounts?.id) return false;
-      try {
-        window.google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: (response: GoogleCredentialResponse) => {
-            googleLogin(response);
-            navigate('/');
-          },
-        });
-        if (googleButtonRef.current) {
-          window.google.accounts.id.renderButton(googleButtonRef.current, {
-            theme: 'filled_black',
-            size: 'large',
-            width: '100%',
-            text: 'signup_with',
-          });
-        }
-        return true;
-      } catch (err) {
-        console.error('Google SDK initialization error:', err);
-        return false;
-      }
-    };
-    if (init()) return;
-    const interval = window.setInterval(() => {
-      if (window.google?.accounts?.id) {
-        window.clearInterval(interval);
-        if (!cancelled) init();
-      }
-    }, 100);
-    return () => {
-      cancelled = true;
-      window.clearInterval(interval);
-    };
-  }, [googleLogin, navigate]);
+  const handleGoogleRegister = async () => {
+    setError('');
+    const { error: authError } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/login`,
+      },
+    });
+
+    if (authError) {
+      setError(authError.message);
+    }
+  };
 
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
@@ -119,7 +89,7 @@ export const Register = () => {
           <div className="w-12 h-12 bg-teal-500/10 border border-teal-500/30 rounded-2xl flex items-center justify-center text-teal-400 mx-auto">
             <Sparkles size={24} />
           </div>
-          <h1 className="text-2xl font-bold text-slate-100">Create Zocesh Zocesh Study AI Account</h1>
+          <h1 className="text-2xl font-bold text-slate-100">Create Zocesh StudyAI Account</h1>
           <p className="text-xs text-slate-400">Join your peers & AI Tutors</p>
         </div>
 
@@ -220,7 +190,13 @@ export const Register = () => {
           <div className="flex-grow border-t border-slate-800"></div>
         </div>
 
-        <div ref={googleButtonRef} className="w-full flex justify-center overflow-hidden rounded-xl"></div>
+        <button
+          type="button"
+          onClick={handleGoogleRegister}
+          className="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 font-semibold py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <Globe size={16} /> Continue with Google
+        </button>
 
         <p className="text-center text-xs text-slate-400">
           Already have an account? <Link to="/login" className="text-teal-400 font-semibold hover:underline">Sign In</Link>

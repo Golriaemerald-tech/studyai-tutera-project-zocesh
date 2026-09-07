@@ -329,19 +329,19 @@ export function subjectCategory(subjectName: string): string {
 export function subjectIcon(subjectName: string): string {
   const name = subjectName.toLowerCase();
 
-  if (name.includes('math')) return 'Calculator';
-  if (name.includes('physics')) return 'Atom';
-  if (name.includes('chemistry')) return 'FlaskConical';
-  if (name.includes('biology')) return 'Dna';
-  if (name.includes('english')) return 'Languages';
-  if (name.includes('computer') || name.includes('digital')) return 'Monitor';
-  if (name.includes('geography')) return 'Globe';
-  if (name.includes('history')) return 'Landmark';
-  if (name.includes('government')) return 'Landmark';
-  if (name.includes('economics')) return 'TrendingUp';
-  if (name.includes('account')) return 'Calculator';
+  if (name.includes('math')) return '🧮';
+  if (name.includes('physics')) return '⚛️';
+  if (name.includes('chemistry')) return '⚗️';
+  if (name.includes('biology')) return '🧬';
+  if (name.includes('english')) return '🌐';
+  if (name.includes('computer') || name.includes('digital')) return '💻';
+  if (name.includes('geography')) return '🌍';
+  if (name.includes('history')) return '🏛️';
+  if (name.includes('government')) return '🏛️';
+  if (name.includes('economics')) return '📈';
+  if (name.includes('account')) return '🧮';
   if (name.includes('commerce') || name.includes('business')) {
-    return 'BriefcaseBusiness';
+    return '💼';
   }
   if (name.includes('literature')) return 'BookOpen';
   if (name.includes('agric')) return 'Sprout';

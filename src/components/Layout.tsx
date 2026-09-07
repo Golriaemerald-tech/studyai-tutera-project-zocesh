@@ -38,7 +38,7 @@ export const Layout: React.FC = () => {
 
   const navItems = [
     { label: 'Dashboard', path: '/', icon: Home },
-    { label: 'Zocesh Zocesh Study AI', path: '/study', icon: Brain },
+    { label: 'Zocesh StudyAI', path: '/study', icon: Brain },
     { label: 'Tutor AI', path: '/chat', icon: Sparkles },
     { label: 'Overseer AI', path: '/overseer', icon: Shield, adminOnly: true },
     { label: 'Subjects', path: '/subjects', icon: BookOpen },
@@ -51,7 +51,7 @@ export const Layout: React.FC = () => {
     { label: 'Community', path: '/community', icon: MessageSquare },
     { label: 'Profile', path: '/profile', icon: User },
     { label: 'Settings', path: '/settings', icon: Settings },
-    { label: 'About Zocesh Zocesh Study AI', path: '/about', icon: Info },
+    { label: 'About Zocesh StudyAI', path: '/about', icon: Info },
     { label: 'Updates', path: '/updates', icon: History },
   ];
 
@@ -88,7 +88,7 @@ export const Layout: React.FC = () => {
               </div>
               <div>
                 <div className="font-display text-base font-bold tracking-tight">
-                  Zocesh Zocesh Study AI
+                  Zocesh StudyAI
                 </div>
                 <div className="text-[9px] font-medium uppercase tracking-wider text-brand-300">
                   Nigeria Curriculum
@@ -149,7 +149,7 @@ export const Layout: React.FC = () => {
                 <div className="grid h-9 w-9 place-items-center rounded-xl bg-brand-500/10 text-brand-300">
                   <Sparkles size={18} />
                 </div>
-                <span className="font-display font-bold">Zocesh Zocesh Study AI</span>
+                <span className="font-display font-bold">Zocesh StudyAI</span>
               </Link>
 
               <button

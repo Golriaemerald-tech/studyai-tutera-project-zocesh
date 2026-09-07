@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth, SUPER_ADMIN_EMAIL } from '../context/AuthContext';
+import { useAuth, SUPER_ADMIN_EMAILS } from '../context/AuthContext';
 import { ShieldCheck, UserPlus, UserMinus, Sparkles, ShieldAlert, UserX } from 'lucide-react';
 
 export const AdminPanel = () => {
@@ -14,7 +14,7 @@ export const AdminPanel = () => {
         <ShieldAlert size={56} className="text-red-400 mb-4" />
         <h1 className="text-2xl font-bold text-white mb-2">Access Restricted</h1>
         <p className="text-slate-400 max-w-md">
-          This panel is restricted exclusively to administrators ({SUPER_ADMIN_EMAIL}).
+          This panel is restricted exclusively to administrators ({SUPER_ADMIN_EMAILS}).
         </p>
       </div>
     );
@@ -43,7 +43,7 @@ export const AdminPanel = () => {
             <ShieldCheck className="text-amber-400" size={26} /> Admin Command Center
           </h1>
           <p className="text-sm text-slate-400">
-            {isSuperAdmin ? `Root Super Admin Access (${SUPER_ADMIN_EMAIL})` : 'App Administrator Panel'}
+            {isSuperAdmin ? `Root Super Admin Access (${SUPER_ADMIN_EMAILS})` : 'App Administrator Panel'}
           </p>
         </div>
       </div>
@@ -109,7 +109,7 @@ export const AdminPanel = () => {
           <h2 className="text-lg font-semibold text-white">Current Admin Roster</h2>
           <div className="space-y-2">
             {adminList.map((email) => {
-              const isRoot = email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+              const isRoot = SUPER_ADMIN_EMAILS.some((adminEmail) => adminEmail.toLowerCase() === email.toLowerCase());
               return (
                 <div key={email} className="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800">
                   <span className="text-xs text-slate-200 font-mono">{email}</span>
