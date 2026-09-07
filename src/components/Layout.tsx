@@ -20,6 +20,8 @@ import {
   LogOut,
   ChevronRight,
   HelpCircle,
+  Info,
+  History,
 } from 'lucide-react';
 
 export const Layout: React.FC = () => {
@@ -49,6 +51,8 @@ export const Layout: React.FC = () => {
     { label: 'Community', path: '/community', icon: MessageSquare },
     { label: 'Profile', path: '/profile', icon: User },
     { label: 'Settings', path: '/settings', icon: Settings },
+    { label: 'About StudyAI', path: '/about', icon: Info },
+    { label: 'Updates', path: '/updates', icon: History },
   ];
 
   const visibleItems = navItems.filter(

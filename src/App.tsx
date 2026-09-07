@@ -15,6 +15,8 @@ import { OverseerAI } from './pages/OverseerAI';
 import { ChatArena } from './pages/ChatArena';
 import Chat from './pages/Chat';
 import QuizPage from './pages/QuizPage';
+import About from './pages/About';
+import Updates from './pages/Updates';
 import { Layout as AppLayout } from './components/Layout';
 
 import { 
@@ -792,6 +794,24 @@ export const App = () => {
               element={
                 <RequireAuth>
                   <Settings />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/about"
+              element={
+                <RequireAuth>
+                  <About />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/updates"
+              element={
+                <RequireAuth>
+                  <Updates />
                 </RequireAuth>
               }
             />

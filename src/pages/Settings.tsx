@@ -121,29 +121,7 @@ export default function Settings() {
               ))}
             </div>
           </div>
-        </div>
-
-        <div className="card">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold">Gemini AI</h2>
-            <span className={`pill ${connectionStatus === "ok" ? "border-brand-400/50 text-brand-300" : ""}`}>
-              {connectionStatus === "ok" ? "Connected ✓" : "Server-side connection"}
-            </span>
-          </div>
-          <p className="text-sm text-slate-400">
-            Model: <b className="text-slate-200">gemini-3.5-flash-lite</b>
-          </p>
-          <p className="mt-2 text-sm text-slate-500">
-            Your Gemini API key is stored securely as a server environment variable (
-            <code className="rounded bg-black/30 px-1.5 py-0.5 text-xs">GEMINI_API_KEY</code>) and never touches
-            the browser. Requests are proxied through <code className="rounded bg-black/30 px-1.5 py-0.5 text-xs">/api/chat</code>.
-          </p>
-          <button className="btn btn-primary mt-4" onClick={testConnection} disabled={testing}>
-            {testing ? "Testing…" : "Test Connection"}
-          </button>
-        </div>
-
-        <div className="card">
+        </div><div className="card">
           <h2 className="mb-4 font-display text-lg font-bold">Appearance</h2>
           <div className="flex gap-2">
             {(["dark", "light", "system"] as const).map((t) => (
