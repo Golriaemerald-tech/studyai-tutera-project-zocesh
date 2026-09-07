@@ -19,6 +19,7 @@ import {
   Settings,
   LogOut,
   ChevronRight,
+  HelpCircle,
 } from 'lucide-react';
 
 export const Layout: React.FC = () => {
@@ -36,14 +37,16 @@ export const Layout: React.FC = () => {
   const navItems = [
     { label: 'Dashboard', path: '/', icon: Home },
     { label: 'StudyAI', path: '/study', icon: Brain },
+    { label: 'Tutor AI', path: '/chat', icon: Sparkles },
     { label: 'Overseer AI', path: '/overseer', icon: Shield, adminOnly: true },
     { label: 'Subjects', path: '/subjects', icon: BookOpen },
     { label: 'Study & Quizzes', path: '/study-mode', icon: ClipboardCheck },
+    { label: 'Quiz', path: '/quiz', icon: HelpCircle },
     { label: 'Flashcards', path: '/flashcards', icon: Layers },
     { label: 'Study Planner', path: '/planner', icon: CalendarDays },
     { label: 'Progress', path: '/progress', icon: BarChart3 },
     { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
-    { label: 'Community', path: '/chat', icon: MessageSquare },
+    { label: 'Community', path: '/community', icon: MessageSquare },
     { label: 'Profile', path: '/profile', icon: User },
     { label: 'Settings', path: '/settings', icon: Settings },
   ];

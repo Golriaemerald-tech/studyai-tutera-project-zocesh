@@ -30,6 +30,7 @@ export interface Topic {
 export interface SubjectMeta {
   icon: string;
   category: string;
+  department: string;
   topics: Topic[];
 }
 

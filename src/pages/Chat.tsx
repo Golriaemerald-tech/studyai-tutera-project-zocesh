@@ -1,74 +1,247 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, Send, Flame, CheckCircle, Star, Compass } from 'lucide-react';
+import { Sparkles, Send, Volume2, VolumeX } from 'lucide-react';
+import { renderMarkdown } from '../lib/markdown';
+
+type Message = {
+  role: 'user' | 'assistant';
+  content: string;
+};
 
 export const Chat = () => {
   const { user } = useAuth();
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: `Welcome back, ${user?.nickname || 'Student'}! Ready to conquer your studies today?` }
-  ]);
-  const [input, setInput] = useState('');
 
-  const handleSend = (e: React.FormEvent) => {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: 'assistant',
+      content: `Welcome back, ${user?.nickname || user?.name || 'Student'}! 👋 I'm your StudyAI Tutor. What would you like to learn today?`,
+    },
+  ]);
+
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [speaking, setSpeaking] = useState<number | null>(null);
+
+  async function handleSend(e: FormEvent) {
     e.preventDefault();
-    if (!input.trim()) return;
-    const msg = input;
-    setMessages((prev) => [...prev, { role: 'user', content: msg }, { role: 'assistant', content: `Got it! Let's examine "${msg}" together in detail.` }]);
+
+    const prompt = input.trim();
+    if (!prompt || loading) return;
+
     setInput('');
-  };
+
+    const nextMessages: Message[] = [
+      ...messages,
+      { role: 'user', content: prompt },
+    ];
+
+    setMessages(nextMessages);
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt,
+          systemInstruction: `
+You are STUDYAI, a patient Nigerian secondary-school tutor.
+
+Student name: ${user?.nickname || user?.name || 'Student'}
+Student class: ${user?.studentClass || 'SS 3'}
+Department: ${user?.department || 'Science'}
+
+Teach at the student's level.
+Address the student naturally as "sir".
+Explain answers clearly and step by step.
+For Mathematics and science, show the actual equations, numbers and working.
+Never invent random symbols or placeholder characters for mathematical notation.
+Do not put literal ## or ### heading markers in your response.
+Use **bold text** when emphasis is needed.
+Keep explanations educational, clear and age-appropriate.
+        `.trim(),
+          maxOutputTokens: 2048,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.error || 'Tutor AI request failed.');
+      }
+
+      const answer =
+        typeof data?.text === 'string' && data.text.trim()
+          ? data.text.trim()
+          : 'I could not generate a response. Please try again, sir.';
+
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: answer },
+      ]);
+    } catch (error) {
+      console.error('Tutor AI error:', error);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content:
+            'Sorry sir, I could not reach Tutor AI right now. Please check your Gemini configuration and try again.',
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function speak(text: string, index: number) {
+    if (speaking !== null) return;
+
+    try {
+      setSpeaking(index);
+
+      const response = await fetch('/api/elevenlabs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Voice service unavailable.');
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+
+      audio.onended = () => {
+        URL.revokeObjectURL(url);
+        setSpeaking(null);
+      };
+
+      audio.onerror = () => {
+        URL.revokeObjectURL(url);
+        setSpeaking(null);
+      };
+
+      await audio.play();
+    } catch (error) {
+      console.error('ElevenLabs error:', error);
+      setSpeaking(null);
+      alert('Voice is not configured yet. Your text tutor is still working.');
+    }
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-4 shadow-2xl">
-        <span className="text-xs uppercase bg-teal-500/10 border border-teal-500/30 text-teal-300 px-3 py-1 rounded-full font-semibold">Dashboard & General AI Chat</span>
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-100">Welcome, {user?.nickname || user?.name || 'Student'}! 👋</h1>
-        <p className="text-xs md:text-sm text-slate-400">Class: <strong className="text-teal-400">{user?.studentClass || 'SS 3'}</strong> ({user?.department || 'Science'})</p>
+      <div className="card">
+        <span className="pill flex w-fit items-center gap-2">
+          <Sparkles size={14} />
+          STUDYAI TUTOR
+        </span>
+
+        <h1 className="mt-3 font-display text-2xl md:text-3xl font-bold">
+          Your AI Tutor
+        </h1>
+
+        <p className="mt-2 text-sm text-slate-400">
+          {user?.studentClass || 'SS 3'} •{' '}
+          {user?.department || 'Science'}
+        </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-slate-900 border border-slate-800 p-5 rounded-3xl space-y-2">
-          <div className="flex justify-between items-center text-slate-400"><span className="text-xs">Study streak</span><Flame className="text-amber-500" size={18} /></div>
-          <p className="text-2xl font-bold text-slate-100">5d</p>
-        </div>
-        <div className="bg-slate-900 border border-slate-800 p-5 rounded-3xl space-y-2">
-          <div className="flex justify-between items-center text-slate-400"><span className="text-xs">Questions solved</span><CheckCircle className="text-teal-400" size={18} /></div>
-          <p className="text-2xl font-bold text-slate-100">42</p>
-        </div>
-        <div className="bg-slate-900 border border-slate-800 p-5 rounded-3xl space-y-2">
-          <div className="flex justify-between items-center text-slate-400"><span className="text-xs">Average quiz score</span><Star className="text-amber-400" size={18} /></div>
-          <p className="text-2xl font-bold text-slate-100">91%</p>
-        </div>
-        <div className="bg-slate-900 border border-slate-800 p-5 rounded-3xl space-y-2">
-          <div className="flex justify-between items-center text-slate-400"><span className="text-xs">Topics mastered</span><Compass className="text-indigo-400" size={18} /></div>
-          <p className="text-2xl font-bold text-slate-100">14</p>
-        </div>
-      </div>
+      <div className="card">
+        <div className="space-y-4 max-h-[55vh] overflow-y-auto pr-1">
+          {messages.map((message, index) => (
+            <div
+              key={index}
+              className={`flex ${
+                message.role === 'user'
+                  ? 'justify-end'
+                  : 'justify-start'
+              }`}
+            >
+              <div
+                className={`max-w-[90%] rounded-2xl px-4 py-3 ${
+                  message.role === 'user'
+                    ? 'bg-brand-500 text-white'
+                    : 'bg-surface-raised border border-surface-border/60'
+                }`}
+              >
+                {message.role === 'assistant' ? (
+                  <div
+                    className="prose prose-invert prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{
+                      __html: renderMarkdown(message.content),
+                    }}
+                  />
+                ) : (
+                  <p className="text-sm whitespace-pre-wrap">
+                    {message.content}
+                  </p>
+                )}
 
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
-        <h2 className="text-sm font-bold uppercase text-slate-400 flex items-center gap-2"><Sparkles className="text-teal-400" size={16} /> General Assistant Room</h2>
-        <div className="space-y-3 max-h-[350px] overflow-y-auto pr-2">
-          {messages.map((m, idx) => (
-            <div key={idx} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`p-4 rounded-2xl text-xs max-w-lg ${m.role === 'user' ? 'bg-teal-500 text-slate-950 font-medium' : 'bg-slate-800 text-slate-200'}`}>
-                {m.content}
+                {message.role === 'assistant' && (
+                  <button
+                    type="button"
+                    onClick={() => speak(message.content, index)}
+                    className="mt-3 inline-flex items-center gap-2 rounded-lg border border-surface-border px-3 py-1.5 text-xs hover:border-brand-400/60"
+                  >
+                    {speaking === index ? (
+                      <>
+                        <VolumeX size={14} />
+                        Speaking...
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 size={14} />
+                        Read aloud
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
           ))}
+
+          {loading && (
+            <div className="flex justify-start">
+              <div className="rounded-2xl bg-surface-raised border border-surface-border/60 px-4 py-3 text-sm text-slate-400">
+                Tutor AI is thinking, sir...
+              </div>
+            </div>
+          )}
         </div>
-        <form onSubmit={handleSend} className="flex gap-2 pt-2">
+
+        <form
+          onSubmit={handleSend}
+          className="mt-5 flex gap-2"
+        >
           <input
             type="text"
-            placeholder="Type your message..."
+            placeholder="Ask your Tutor AI anything..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-100 focus:outline-none focus:border-teal-500"
+            disabled={loading}
+            className="flex-1 rounded-xl border border-surface-border bg-surface-raised px-4 py-3 text-sm outline-none focus:border-brand-400"
           />
-          <button type="submit" className="bg-teal-500 hover:bg-teal-400 text-slate-950 px-5 rounded-xl font-bold flex items-center justify-center transition-all">
-            <Send size={16} />
+
+          <button
+            type="submit"
+            disabled={loading || !input.trim()}
+            className="btn btn-primary px-4"
+          >
+            <Send size={17} />
           </button>
         </form>
       </div>
     </div>
   );
 };
+
 export default Chat;

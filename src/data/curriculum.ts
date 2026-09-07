@@ -1,22 +1,22 @@
 import type { ClassName, SubjectMeta, Topic } from "@/types";
 
-const subjectDefs: Record<string, { icon: string; category: string }> = {
-  Mathematics: { icon: "∑", category: "Core" },
-  "English Language": { icon: "Aa", category: "Core" },
-  Physics: { icon: "⚡", category: "Core" },
-  Chemistry: { icon: "⚗", category: "Core" },
-  Biology: { icon: "🧬", category: "Core" },
-  Economics: { icon: "₦", category: "Social Sciences" },
-  Government: { icon: "⚖", category: "Social Sciences" },
-  Geography: { icon: "🌍", category: "Social Sciences" },
-  Commerce: { icon: "▣", category: "Social Sciences" },
-  Accounting: { icon: "₦", category: "Social Sciences" },
-  "Literature in English": { icon: "📖", category: "Humanities" },
-  "Civic Education": { icon: "◇", category: "Humanities" },
-  History: { icon: "⌛", category: "Humanities" },
-  "Computer Studies": { icon: "⌨", category: "Technology" },
-  "Data Processing": { icon: "▤", category: "Technology" },
-  "Information Technology": { icon: "◉", category: "Technology" },
+const subjectDefs: Record<string, { icon: string; category: string; department: string }> = {
+  Mathematics: { icon: "∑", category: "Core", department: "Core" },
+  "English Language": { icon: "Aa", category: "Core", department: "Core" },
+  Physics: { icon: "⚡", category: "Core", department: "Science" },
+  Chemistry: { icon: "⚗", category: "Core", department: "Science" },
+  Biology: { icon: "🧬", category: "Core", department: "Science" },
+  Economics: { icon: "₦", category: "Social Sciences", department: "Commercial" },
+  Government: { icon: "⚖", category: "Social Sciences", department: "Arts" },
+  Geography: { icon: "🌍", category: "Social Sciences", department: "Arts" },
+  Commerce: { icon: "▣", category: "Social Sciences", department: "Commercial" },
+  "Financial Accounting": { icon: "₦", category: "Social Sciences", department: "Commercial" },
+  "Literature in English": { icon: "📖", category: "Humanities", department: "Arts" },
+  "Civic Education": { icon: "◇", category: "Core", department: "Core" },
+  History: { icon: "⌛", category: "Humanities", department: "Arts" },
+  "Computer Studies": { icon: "⌨", category: "Technology", department: "Science" },
+  "Data Processing": { icon: "▤", category: "Technology", department: "Commercial" },
+  "Information Technology": { icon: "◉", category: "Technology", department: "Science" },
 };
 
 type RawTopic = [string, string, string[], string | string[], string];
@@ -98,7 +98,7 @@ const topicSets: Record<string, RawTopic[]> = {
     ["Business Ownership", "Forms of business organisation", ["Sole trader", "Partnership", "Company"], "Ownership affects liability and control.", "Compare advantages and disadvantages."],
     ["Aids to Trade", "Services supporting trade", ["Banking", "Insurance", "Transport", "Communication"], "Aids to trade make exchange easier.", "Know the specific role of each aid."],
   ],
-  Accounting: [
+  "Financial Accounting": [
     ["Accounting Principles", "Basic concepts and conventions", ["Entity", "Going concern", "Consistency"], "Business records are separated from personal records.", "Apply concepts to transactions."],
     ["Double Entry", "Debit and credit recording", ["Ledger", "Accounts", "Trial balance"], "Every transaction has at least two entries.", "Debit does not simply mean increase."],
     ["Final Accounts", "Basic financial statements", ["Trading account", "Profit and loss", "Balance sheet"], ["gross profit=sales-cost of sales"], "Classify capital and revenue items correctly."],
@@ -169,9 +169,17 @@ function buildClass(className: ClassName): Record<string, SubjectMeta> {
         }))
       );
     }
-    out[subject] = { ...meta, topics };
+    out[subject] = { ...meta, department: subjectDefs[subject].department, topics };
   }
   return out;
+}
+
+export function normalizeClassName(className: string): ClassName {
+  const n = className?.toUpperCase().replace(/\s+/g, "") ?? "";
+  if (n === "SS1" || n === "SSS1") return "SS1";
+  if (n === "SS2" || n === "SSS2") return "SS2";
+  if (n === "SS3" || n === "SSS3") return "SS3";
+  return "SS3";
 }
 
 export const classes: Record<ClassName, Record<string, SubjectMeta>> = {
@@ -190,6 +198,10 @@ export function subjectCategory(name: string): string {
 
 export function subjectIcon(name: string): string {
   return subjectDefs[name]?.icon ?? "•";
+}
+
+export function subjectDepartment(name: string): string {
+  return subjectDefs[name]?.department ?? "Core";
 }
 
 export function getSubject(name: string, className: ClassName): SubjectMeta | null {

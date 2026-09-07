@@ -13,8 +13,6 @@ import ProgressPage from './pages/ProgressPage';
 import Settings from './pages/Settings';
 import { OverseerAI } from './pages/OverseerAI';
 import { ChatArena } from './pages/ChatArena';
-import Chat from './pages/Chat';
-import QuizPage from './pages/QuizPage';
 import { Layout as AppLayout } from './components/Layout';
 
 import { 
@@ -662,6 +660,7 @@ const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 // --- APP ROUTER ---
 export const App = () => {
   return (
+    <AuthProvider>
       <BrowserRouter>
         <Routes>
           {/* Authentication */}
@@ -755,25 +754,7 @@ export const App = () => {
               path="/chat"
               element={
                 <RequireAuth>
-                  <Chat />
-                </RequireAuth>
-              }
-            />
-
-            <Route
-              path="/community"
-              element={
-                <RequireAuth>
                   <ChatArena />
-                </RequireAuth>
-              }
-            />
-
-            <Route
-              path="/quiz"
-              element={
-                <RequireAuth>
-                  <QuizPage />
                 </RequireAuth>
               }
             />
@@ -819,6 +800,7 @@ export const App = () => {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
+    </AuthProvider>
   );
 };
 

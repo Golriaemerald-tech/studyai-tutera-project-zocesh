@@ -67,9 +67,6 @@ html[data-theme="dark"] {
   html[data-theme="light"] textarea.input-area {
     @apply border-slate-200 bg-white text-slate-800;
   }
-  .prose-chat h1 {
-    @apply text-lg font-bold text-brand-300 mb-2 mt-2;
-  }
   .prose-chat h2 {
     @apply text-base font-semibold text-brand-300 mb-1 mt-2;
   }
@@ -79,45 +76,17 @@ html[data-theme="dark"] {
   .prose-chat p {
     @apply mb-2 leading-relaxed;
   }
-  .prose-chat ul,
-  .prose-chat ol {
-    @apply pl-5 mb-2 space-y-0.5;
-  }
   .prose-chat ul {
-    @apply list-disc;
-  }
-  .prose-chat ol {
-    @apply list-decimal;
-  }
-  .prose-chat li {
-    @apply text-sm;
+    @apply list-disc pl-5 mb-2 space-y-0.5;
   }
   .prose-chat code {
     @apply rounded bg-black/30 px-1.5 py-0.5 font-mono text-xs;
-  }
-  .prose-chat pre {
-    @apply overflow-x-auto rounded-lg bg-black/30 p-3;
-  }
-  .prose-chat pre code {
-    @apply bg-transparent px-0 py-0;
   }
   .prose-chat strong {
     @apply font-semibold text-white;
   }
   html[data-theme="light"] .prose-chat strong {
     @apply text-slate-900;
-  }
-  .prose-chat em {
-    @apply italic text-slate-300;
-  }
-  .prose-chat del {
-    @apply line-through text-slate-500;
-  }
-  .prose-chat blockquote {
-    @apply border-l-2 border-brand-500/30 pl-4 italic text-slate-300 my-2;
-  }
-  .prose-chat hr {
-    @apply border-0 border-t border-surface-border my-4;
   }
 }
 

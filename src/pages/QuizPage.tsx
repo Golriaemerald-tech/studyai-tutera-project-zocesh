@@ -1,21 +1,36 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useApp } from "@/store/AppContext";
 import { generateAIQuiz, localQuestions, startQuiz } from "@/lib/quiz";
 import { recordQuiz } from "@/lib/progress";
+import { allSubjectNames, getSubject } from "@/data/curriculum";
 import type { QuizState } from "@/types";
 
 export default function QuizPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { className, subjects, toast } = useApp();
+    const { className, subjects: appSubjects, toast, subjects } = useApp();
+
   const navState = (location.state as { subject?: string; topic?: string; ai?: boolean }) || {};
   const subject = navState.subject || subjects[0] || "Mathematics";
   const topic = navState.topic;
 
+  // Subject/topic are driven by dropdowns so students can switch context
+  // without navigating back to the Subjects page.
+  const subjectOptions = appSubjects.length ? appSubjects : allSubjectNames();
+  const [activeSubject, setActiveSubject] = useState<string>(
+    navState.subject || subjectOptions[0] || "Mathematics"
+  );
+  const [activeTopic, setActiveTopic] = useState<string>(navState.topic || "");
+  const topicOptions = useMemo(() => {
+    const meta = getSubject(activeSubject, className);
+    return meta ? meta.topics.map((t) => t.title) : [];
+  }, [activeSubject, className]);
+
   const [quiz, setQuiz] = useState<QuizState | null>(null);
   const [loading, setLoading] = useState(true);
   const [finished, setFinished] = useState(false);
+  const [useAI, setUseAI] = useState(navState.ai !== false);
 
   useEffect(() => {
     let cancelled = false;
