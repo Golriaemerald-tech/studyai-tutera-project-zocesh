@@ -231,7 +231,7 @@ export default function DMS() {
         </header>
 
         <div className="flex-1 flex overflow-hidden">
-          <aside className="w-full sm:w-80 border-r border-slate-800 flex flex-col">
+          <aside className={`w-full sm:w-80 border-r border-slate-800 flex flex-col ${selectedThread ? "hidden sm:flex" : "flex"}`}>
             <div className="p-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -266,7 +266,7 @@ export default function DMS() {
             </div>
           </aside>
 
-          <section className="hidden sm:flex flex-1 flex-col">
+          <section className={`flex-1 flex-col ${selectedThread ? "flex" : "hidden sm:flex"}`}>
             {!selectedThread ? (
               <div className="flex-1 flex items-center justify-center text-slate-500">
                 Select someone to start a conversation.
@@ -274,7 +274,7 @@ export default function DMS() {
             ) : (
               <>
                 <div className="p-4 border-b border-slate-800">
-                  <h2 className="font-semibold">
+                  <button onClick={() => { setSelectedThread(null); setSelectedUser(null); }} className="sm:hidden p-2 mr-2 rounded-xl bg-slate-800"><ArrowLeft className="w-5 h-5" /></button><h2 className="font-semibold">
                     {publicName(selectedUser)}
                   </h2>
                 </div>
