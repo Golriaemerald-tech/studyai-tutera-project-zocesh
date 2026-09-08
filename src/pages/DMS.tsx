@@ -58,6 +58,7 @@ export default function DMS() {
           .from("profiles")
           .select("id,display_name,nickname,email,role")
           .neq("id", auth.user.id)
+          .not("role", "in", "(owner,super_admin)")
           .order("display_name"),
         supabase.from("dm_threads").select("*").order("created_at", { ascending: false }),
         supabase.from("dm_members").select("*"),
@@ -65,7 +66,11 @@ export default function DMS() {
       ]);
 
     setMe(meResult.data);
-    setUsers(usersResult.data ?? []);
+    setUsers(
+      (usersResult.data ?? []).filter(
+        (u) => u.role !== "owner" && u.role !== "super_admin"
+      )
+    );
     setThreads(threadsResult.data ?? []);
     setMembers(membersResult.data ?? []);
     setMessages(messagesResult.data ?? []);

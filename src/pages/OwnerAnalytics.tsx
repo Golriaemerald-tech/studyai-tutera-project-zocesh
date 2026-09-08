@@ -45,7 +45,7 @@ export default function OwnerAnalytics() {
       ] = await Promise.all([
         supabase.from("profiles").select("*", { count: "exact", head: true }),
         supabase.from("profiles").select("*", { count: "exact", head: true }).eq("role", "student"),
-        supabase.from("profiles").select("*", { count: "exact", head: true }).eq("role", "teacher"),
+        Promise.resolve({ count: 0, error: null }),
         supabase.from("conversations").select("*", { count: "exact", head: true }),
         supabase.from("messages").select("*", { count: "exact", head: true }),
         supabase.from("learning_progress").select("*", { count: "exact", head: true }),

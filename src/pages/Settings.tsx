@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { supabase } from "../lib/supabase";
 import { useApp } from "@/store/AppContext";
 import { allSubjectNames } from "@/data/curriculum";
 import * as Gemini from "@/lib/gemini";
@@ -16,6 +17,49 @@ const GOALS = [
 export default function Settings() {
   const { className, setClassName, goal, setGoal, subjects, setSubjects, theme, setTheme, toast } = useApp();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [nickname, setNickname] = useState("");
+  const [savingNickname, setSavingNickname] = useState(false);
+
+  useEffect(() => {
+    const loadNickname = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("nickname")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      setNickname(data?.nickname ?? "");
+    };
+
+    loadNickname();
+  }, []);
+
+  async function saveNickname() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    setSavingNickname(true);
+
+    const value = nickname.trim().slice(0, 24);
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({ nickname: value || null })
+      .eq("id", user.id);
+
+    setSavingNickname(false);
+
+    if (error) {
+      toast("Could not save nickname.", "error");
+      return;
+    }
+
+    setNickname(value);
+    toast("Nickname saved.", "success");
+  }
 
   function toggleSubject(s: string) {
     const next = subjects.includes(s) ? subjects.filter((x) => x !== s) : [...subjects, s];
@@ -66,6 +110,36 @@ export default function Settings() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
+      <div className="card md:col-span-2">
+        <h2 className="mb-2 font-display text-lg font-bold">Nickname</h2>
+        <p className="mb-4 text-sm text-slate-400">
+          Choose the name other students will see in Community, Direct Messages and Tutor AI.
+          Staff accounts always display their rank.
+        </p>
+
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <input
+            value={nickname}
+            maxLength={24}
+            onChange={(e) => setNickname(e.target.value)}
+            placeholder="What should we call you?"
+            className="input flex-1"
+          />
+          <button
+            className="btn"
+            onClick={saveNickname}
+            disabled={savingNickname}
+          >
+            {savingNickname ? "Saving..." : "Save nickname"}
+          </button>
+        </div>
+
+        <p className="mt-2 text-xs text-slate-500">
+          Maximum 24 characters.
+        </p>
+      </div>
+
+
         <div className="card">
           <h2 className="mb-4 font-display text-lg font-bold">Student</h2>
           <div className="grid gap-4">

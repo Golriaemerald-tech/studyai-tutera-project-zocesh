@@ -37,7 +37,7 @@ export default function OwnerSettings() {
         supabase
           .from("profiles")
           .select("*", { count: "exact", head: true })
-          .in("role", ["admin", "superadmin", "owner", "teacher"]),
+          .in("role", ["admin", "super_admin", "owner"]),
         supabase
           .from("curriculum_subjects")
           .select("*", { count: "exact", head: true }),

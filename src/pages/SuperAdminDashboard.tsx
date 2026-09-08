@@ -44,12 +44,12 @@ export default function SuperAdminDashboard() {
         supabase
           .from("profiles")
           .select("*", { count: "exact", head: true })
-          .in("role", ["teacher", "admin", "superadmin", "owner"]),
+          .in("role", ["admin", "super_admin", "owner"]),
 
         supabase
           .from("profiles")
           .select("*", { count: "exact", head: true })
-          .in("role", ["admin", "superadmin", "owner"]),
+          .in("role", ["admin", "super_admin", "owner"]),
 
         supabase
           .from("reports")

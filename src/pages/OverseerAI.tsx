@@ -2,20 +2,30 @@ import { useState, useEffect } from 'react';
 import { callGeminiAPI } from '../utils/gemini';
 import { renderMarkdown } from '../lib/markdown';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import { ShieldAlert, UserX, RefreshCw } from 'lucide-react';
 
 export const OverseerAI = () => {
-  const { isSuperAdmin, banUser, getBannedUsers, bannedList } = useAuth();
+  const { isSuperAdmin } = useAuth();
+  const [bannedList, setBannedList] = useState<any[]>([]);
   const [scanResult, setScanResult] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [targetEmail, setTargetEmail] = useState<string>('');
   const [banReason, setBanReason] = useState<string>('');
   const [banStatus, setBanStatus] = useState<string>('');
 
-  useEffect(() => {
-    if (getBannedUsers) {
-      getBannedUsers();
+  const loadBannedUsers = async () => {
+    const { data, error } = await supabase.functions.invoke("admin-roles", {
+      body: { action: "list" },
+    });
+
+    if (!error) {
+      setBannedList(data?.bans ?? data?.bannedUsers ?? data?.data ?? []);
     }
+  };
+
+  useEffect(() => {
+    loadBannedUsers();
   }, []);
 
   const handleRunScan = async () => {
@@ -35,11 +45,29 @@ export const OverseerAI = () => {
 
     try {
       setBanStatus('Processing ban action...');
-      await banUser(targetEmail.trim().toLowerCase(), banReason.trim() || 'Violated community guidelines');
-      setBanStatus(`Successfully banned ${targetEmail}`);
+
+      const identifier = targetEmail.trim();
+
+      const { data, error } = await supabase.functions.invoke("admin-roles", {
+        body: {
+          action: "ban",
+          identifier,
+          reason: banReason.trim() || "Violated community guidelines",
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message || "Ban request failed");
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      setBanStatus(`Successfully banned ${data?.user?.email || identifier}`);
       setTargetEmail('');
       setBanReason('');
-      if (getBannedUsers) getBannedUsers();
+      await loadBannedUsers();
     } catch (err: any) {
       setBanStatus(`Error: ${err.message || 'Failed to ban user'}`);
     }
@@ -85,8 +113,8 @@ export const OverseerAI = () => {
         </h2>
         <form onSubmit={handleBan} className="space-y-3">
           <input
-            type="email"
-            placeholder="Target User or Admin Email..."
+            type="text"
+            placeholder="Target nickname or email..."
             value={targetEmail}
             onChange={(e) => setTargetEmail(e.target.value)}
             className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-red-500"
@@ -117,7 +145,12 @@ export const OverseerAI = () => {
             {bannedList.map((item: any, idx: number) => (
               <li key={idx} className="py-2 flex justify-between items-center text-sm">
                 <div>
-                  <p className="font-semibold text-slate-200">{item.email || item}</p>
+                  <p className="font-semibold text-slate-200">
+                    {item.nickname || item.email || item}
+                  </p>
+                  {item.nickname && item.email && (
+                    <p className="text-xs text-slate-500">{item.email}</p>
+                  )}
                   {item.reason && <p className="text-xs text-slate-400">Reason: {item.reason}</p>}
                 </div>
                 <span className="text-xs bg-red-500/10 text-red-400 px-2.5 py-1 rounded-full border border-red-500/20">

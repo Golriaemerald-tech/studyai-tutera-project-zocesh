@@ -44,9 +44,15 @@ export default function OwnerDashboard() {
         activity,
       ] = await Promise.all([
         supabase.from("profiles").select("*", { count: "exact", head: true }),
-        supabase.from("profiles").select("*", { count: "exact", head: true }).eq("role", "student"),
-        supabase.from("profiles").select("*", { count: "exact", head: true }).eq("role", "teacher"),
-        supabase.from("profiles").select("*", { count: "exact", head: true }).in("role", ["admin", "superadmin", "owner"]),
+        supabase
+          .from("profiles")
+          .select("*", { count: "exact", head: true })
+          .not("class_level", "is", null),
+        Promise.resolve({ count: 0, error: null }),
+        supabase
+          .from("profiles")
+          .select("*", { count: "exact", head: true })
+          .in("role", ["admin", "super_admin", "owner"]),
         supabase.from("reports").select("*", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("bans").select("*", { count: "exact", head: true }),
         supabase.from("learning_progress").select("*", { count: "exact", head: true }),
