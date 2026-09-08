@@ -76,13 +76,6 @@ export const StudyMode = () => {
     [classLevel]
   );
 
-  const selectedCurriculum = useMemo(
-    () => curricula.find((item) => item.id === curriculum),
-    [curricula, curriculum]
-  );
-
-  const curriculumName = selectedCurriculum?.name ?? curriculum;
-
   function changeClass(value: string) {
     const nextDepartments = getDepartments(value);
     const nextDepartment = nextDepartments[0];
@@ -117,7 +110,7 @@ export const StudyMode = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `Create ${questions} ${effectiveType} questions about "${topic}" in ${subject} for ${classLevel}, ${department}, following ${curriculumName}.
+          prompt: `Create ${questions} ${effectiveType} questions about "${topic}" in ${subject} for ${classLevel}, ${department}, following ${curriculum}.
 
 ${typeInstruction}
 
@@ -129,7 +122,7 @@ Create accurate Nigerian secondary-school questions.
 Class: ${classLevel}
 Department: ${department}
 Subject: ${subject}
-Curriculum: ${curriculumName}
+Curriculum: ${curriculum}
 Topic: ${topic}
 Question type: ${effectiveType}
 Mode: ${studyMode}
@@ -408,13 +401,7 @@ Return JSON only:
                 return (
                   <button
                     key={`${letter}-${index}`}
-                    onClick={() => {
-                      if (evaluation) return;
-                      setSelectedAnswer(value);
-                      if (studyMode === 'test') {
-                        void evaluateAnswer(value);
-                      }
-                    }}
+                    onClick={() => !evaluation && setSelectedAnswer(value)}
                     disabled={Boolean(evaluation)}
                     className={`flex w-full gap-3 rounded-xl border p-4 text-left transition ${
                       selectedAnswer === value
@@ -604,7 +591,7 @@ Return JSON only:
             onChange={(e) => {
               const value = e.target.value as 'test' | 'exam';
               setStudyMode(value);
-              setQuestionType('objectives');
+              if (value === 'exam') setQuestionType('objectives');
             }}
             className="w-full rounded-xl border border-white/10 bg-white/5 p-3 text-white"
           >
@@ -620,24 +607,20 @@ Return JSON only:
           <span className="text-sm text-white/70">Question Type</span>
           <select
             value={questionType}
-            disabled={studyMode !== 'test'}
+            disabled={studyMode === 'exam'}
             onChange={(e) =>
               setQuestionType(e.target.value as 'objectives' | 'theory' | 'mixed')
             }
             className="w-full rounded-xl border border-white/10 bg-white/5 p-3 text-white disabled:opacity-50"
           >
             <option value="objectives">Objectives</option>
-            {studyMode === 'test' && (
-              <>
-                <option value="theory">Theory</option>
-                <option value="mixed">Objectives + Theory</option>
-              </>
-            )}
+            <option value="theory">Theory</option>
+            <option value="mixed">Objectives + Theory</option>
           </select>
           <span className="text-xs text-white/40">
             {studyMode === 'exam'
-              ? 'Exam Mode uses objectives only and reveals results at the end.'
-              : 'Test Mode uses objectives for immediate evaluation. Theory and mixed practice are also available when enabled.'}
+              ? 'Exam Mode uses objectives only.'
+              : 'Choose objective, theory, or a mixture.'}
           </span>
         </label>
       </div>

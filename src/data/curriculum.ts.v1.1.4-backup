@@ -46,75 +46,8 @@ export const CURRICULUMS: Curriculum[] = [
   },
 ];
 
-const EXTERNAL_CURRICULA: Curriculum[] = [
-  {
-    id: 'junior-waec-bece',
-    name: 'Junior WAEC / BECE',
-    version: 'Current',
-    source: 'External Examination',
-    classes: ['JSS3'],
-    subjects: [],
-  },
-  {
-    id: 'neco-bece',
-    name: 'NECO BECE',
-    version: 'Current',
-    source: 'External Examination',
-    classes: ['JSS3'],
-    subjects: [],
-  },
-  {
-    id: 'lagos-state-bece',
-    name: 'Lagos State BECE',
-    version: 'Current',
-    source: 'External Examination',
-    classes: ['JSS3'],
-    subjects: [],
-  },
-  {
-    id: 'waec',
-    name: 'WAEC',
-    version: 'Current',
-    source: 'External Examination',
-    classes: ['SS3'],
-    subjects: [],
-  },
-  {
-    id: 'neco-ssce',
-    name: 'NECO',
-    version: 'Current',
-    source: 'External Examination',
-    classes: ['SS3'],
-    subjects: [],
-  },
-  {
-    id: 'gce',
-    name: 'GCE',
-    version: 'Current',
-    source: 'External Examination',
-    classes: ['SS3'],
-    subjects: [],
-  },
-  {
-    id: 'jamb-utme',
-    name: 'JAMB / UTME',
-    version: 'Current',
-    source: 'External Examination',
-    classes: ['SS3'],
-    subjects: [],
-  },
-  {
-    id: 'nabteb',
-    name: 'NABTEB',
-    version: 'Current',
-    source: 'External Examination',
-    classes: ['SS3'],
-    subjects: [],
-  },
-];
-
 export function getCurriculumsForClass(classLevel: string): Curriculum[] {
-  return [...CURRICULUMS, ...EXTERNAL_CURRICULA].filter((curriculum) =>
+  return CURRICULUMS.filter((curriculum) =>
     curriculum.classes.includes(classLevel)
   );
 }

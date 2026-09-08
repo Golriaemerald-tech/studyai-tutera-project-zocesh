@@ -13,29 +13,6 @@ type Update = {
 
 const updates: Update[] = [
   {
-    version: 'v1.1.4',
-    date: 'September 2026',
-    title: 'External Exam Curricula & Study Mode Improvements',
-    status: 'Current',
-    items: [
-      { type: 'Added', text: 'Restored Junior WAEC / BECE preparation for JSS3.' },
-      { type: 'Added', text: 'Restored NECO BECE preparation for JSS3.' },
-      { type: 'Added', text: 'Added Lagos State BECE preparation for JSS3.' },
-      { type: 'Added', text: 'Restored WAEC preparation for SS3.' },
-      { type: 'Added', text: 'Restored NECO preparation for SS3.' },
-      { type: 'Added', text: 'Added GCE preparation for SS3.' },
-      { type: 'Added', text: 'Added JAMB / UTME preparation for SS3.' },
-      { type: 'Added', text: 'Added NABTEB preparation for SS3.' },
-      { type: 'Improved', text: 'Selected examination curricula are now passed to the AI using their proper curriculum names.' },
-      { type: 'Improved', text: 'Objective answers in Test Mode are evaluated immediately after selection.' },
-      { type: 'Improved', text: 'Exam Mode continues to hide correctness and explanations until the exam is complete.' },
-      { type: 'Improved', text: 'External examination options now change automatically according to the selected class.' },
-      { type: 'Fixed', text: 'Fixed Study Mode using only the internal curriculum ID when generating questions.' },
-      { type: 'Fixed', text: 'Preserved the NERDC curriculum and Supabase curriculum integration while restoring examination pathways.' },
-    ],
-  },
-
-  {
     version: 'v1.1.3',
     date: 'September 2026',
     title: 'Supabase Curriculum Integration',
