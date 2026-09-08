@@ -143,11 +143,15 @@ export default function DMS() {
 
     const { data: thread, error } = await supabase
       .from("dm_threads")
-      .insert({})
+      .insert({ created_by: me.id })
       .select()
       .single();
 
-    if (error || !thread) return;
+    if (error || !thread) {
+      console.error("DMS thread creation failed:", error);
+      alert(error?.message || "Could not create the conversation.");
+      return;
+    }
 
     const { error: memberError } = await supabase.from("dm_members").insert([
       { thread_id: thread.id, user_id: me.id },

@@ -31,51 +31,41 @@ export default function PlatformControl() {
     setLoading(true);
     setError("");
 
-    try {
-      const [
-        users,
-        conversations,
-        messages,
-        subjects,
-        reports,
-      ] = await Promise.all([
-        supabase.from("profiles").select("*", { count: "exact", head: true }),
-        supabase
-          .from("conversations")
-          .select("*", { count: "exact", head: true }),
-        supabase.from("messages").select("*", { count: "exact", head: true }),
-        supabase
-          .from("curriculum_subjects")
-          .select("*", { count: "exact", head: true }),
-        supabase.from("reports").select("*", { count: "exact", head: true }),
-      ]);
+    const results = await Promise.all([
+      supabase.from("profiles").select("*", { count: "exact", head: true }),
+      supabase.from("conversations").select("*", { count: "exact", head: true }),
+      supabase.from("messages").select("*", { count: "exact", head: true }),
+      supabase.from("curriculum_subjects").select("*", { count: "exact", head: true }),
+      supabase.from("reports").select("*", { count: "exact", head: true }),
+    ]);
 
-      const firstError =
-        users.error ||
-        conversations.error ||
-        messages.error ||
-        subjects.error ||
-        reports.error;
+    const [users, conversations, messages, subjects, reports] = results;
 
-      if (firstError) throw firstError;
+    const failures: string[] = [];
 
-      setStats({
-        users: users.count ?? 0,
-        conversations: conversations.count ?? 0,
-        messages: messages.count ?? 0,
-        subjects: subjects.count ?? 0,
-        reports: reports.count ?? 0,
-        database: "Connected",
-      });
-    } catch (err: any) {
-      setError(err?.message || "Unable to load platform status.");
-      setStats((current) => ({
-        ...current,
-        database: "Connection error",
-      }));
-    } finally {
-      setLoading(false);
+    if (users.error) failures.push(`Users: ${users.error.message}`);
+    if (conversations.error) failures.push(`Conversations: ${conversations.error.message}`);
+    if (messages.error) failures.push(`Messages: ${messages.error.message}`);
+    if (subjects.error) failures.push(`Curriculum: ${subjects.error.message}`);
+    if (reports.error) failures.push(`Reports: ${reports.error.message}`);
+
+    const anySuccessful = results.some((result) => !result.error);
+
+    setStats({
+      users: users.count ?? 0,
+      conversations: conversations.count ?? 0,
+      messages: messages.count ?? 0,
+      subjects: subjects.count ?? 0,
+      reports: reports.count ?? 0,
+      database: anySuccessful ? "Connected" : "Connection error",
+    });
+
+    if (failures.length > 0) {
+      console.error("Platform Control query failures:", failures);
+      setError(`Some platform data could not be loaded: ${failures.join(" | ")}`);
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {
