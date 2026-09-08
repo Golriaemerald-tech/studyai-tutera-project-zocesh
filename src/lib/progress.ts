@@ -74,8 +74,8 @@ export function recordQuiz(result: Omit<QuizResult, "at">) {
 
 export function stats(className: ClassName, subjects: string[]) {
   const p = data();
-  const all = Object.values(classes[className] || {});
-  const total = all.reduce((n, s) => n + s.topics.length, 0);
+  const all: { topics: unknown[] }[] = [];
+  const total = all.reduce((n, item) => n + item.topics.length, 0);
   const done = Object.keys(p.topics).filter((k) => k.startsWith(className + "|")).length;
   const subjectStats: Record<string, { done: number; total: number }> = {};
   subjects.forEach((s) => {

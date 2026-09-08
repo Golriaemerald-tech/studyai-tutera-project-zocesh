@@ -57,7 +57,7 @@ export default function About() {
 
         <div className="space-y-4 text-white/70">
           <div>
-            <p className="font-semibold text-white">Zo Eshalomi</p>
+            <p className="font-semibold text-white">Zoe Eshalomi</p>
             <p className="text-sm">Owner & creator of Zocesh Study AI</p>
           </div>
 

@@ -13,45 +13,6 @@ type Update = {
 
 const updates: Update[] = [
   {
-    version: 'v1.1.3',
-    date: 'September 2026',
-    title: 'Supabase Curriculum Integration',
-    status: 'Current',
-    items: [
-      { type: 'Added', text: 'Connected the Subjects experience to the Supabase curriculum service.' },
-      { type: 'Added', text: 'Added Supabase-powered curriculum loading based on the student class.' },
-      { type: 'Added', text: 'Added support for JSS1, JSS2, JSS3, SS1, SS2 and SS3 curriculum structures.' },
-      { type: 'Added', text: 'Added curriculum subject categories from the database.' },
-      { type: 'Improved', text: 'Subjects now use curriculum data loaded from the Zocesh Study AI Supabase project.' },
-      { type: 'Improved', text: 'Added curriculum loading states while subjects are being retrieved.' },
-      { type: 'Improved', text: 'Added a graceful fallback when the latest curriculum cannot be loaded.' },
-      { type: 'Improved', text: 'Kept subject progress indicators compatible while the curriculum migration continues.' },
-      { type: 'Fixed', text: 'Fixed TypeScript compatibility issues between the new curriculum layer and existing Study Mode/progress code.' },
-      { type: 'Fixed', text: 'Fixed Study Mode curriculum selection so curriculum IDs are used correctly in the selector.' },
-      { type: 'Fixed', text: 'Fixed curriculum filtering by class level.' },
-      { type: 'Improved', text: 'Preserved the existing subject navigation and study workflow during the curriculum migration.' },
-    ],
-  },
-
-  {
-    version: 'v1.1.2',
-    date: 'September 2026',
-    title: 'Advanced Study, Test & Exam Modes',
-    status: 'Major Update',
-    items: [
-      { type: 'Added', text: 'Study Mode question types: Objectives, Theory and Objectives + Theory.' },
-      { type: 'Added', text: 'Objective questions with selectable answer options.' },
-      { type: 'Added', text: 'Theory questions with a written-answer field.' },
-      { type: 'Added', text: 'AI evaluation of theory answers, including correct points, mistakes, missing information and areas to work on.' },
-      { type: 'Added', text: 'Test Mode with immediate answer evaluation and explanations.' },
-      { type: 'Added', text: 'Exam Mode with objectives-only questions and results revealed after completion.' },
-      { type: 'Added', text: 'Exam performance summary with score and percentage.' },
-      { type: 'Improved', text: 'Study sessions now present questions one at a time for focused practice.' },
-      { type: 'Improved', text: 'Practice feedback is separated from exam assessment.' },
-    ],
-  },
-
-  {
     version: 'v1.1',
     date: 'September 2026',
     title: 'AI Study Tools & Cloud History',

@@ -1,10 +1,10 @@
 import type {
+  ClassCurriculumData,
   CurriculumSubjectData,
   CurriculumTopicData,
 } from './curriculum-data/shared/types';
 
 export type CurriculumTopic = CurriculumTopicData;
-
 export type CurriculumSubject = CurriculumSubjectData;
 
 export type Curriculum = {
@@ -13,7 +13,7 @@ export type Curriculum = {
   version: string;
   source: string;
   classes: string[];
-  subjects: CurriculumSubject[];
+  subjects: string[];
 };
 
 export const CLASS_LEVELS = [
@@ -25,135 +25,25 @@ export const CLASS_LEVELS = [
   'SS3',
 ] as const;
 
-type SubjectDefinition = [string, string, string];
-
-const JSS_SUBJECTS: SubjectDefinition[] = [
-  ['English Studies', 'english', 'Languages'],
-  ['Mathematics', 'mathematics', 'Mathematics'],
-  ['Basic Science and Technology', 'bst', 'Science'],
-  ['Social Studies', 'social-studies', 'Social Science'],
-  ['Civic Education', 'civic', 'National Values'],
-  ['Cultural and Creative Arts', 'cca', 'Creative Arts'],
-  ['Business Studies', 'business', 'Business'],
-  ['Computer Studies', 'computer', 'Technology'],
-  ['Agricultural Science', 'agriculture', 'Pre-Vocational'],
-  ['Home Economics', 'home-economics', 'Pre-Vocational'],
-  ['French', 'french', 'Languages'],
-  ['Christian Religious Studies', 'crs', 'Religion'],
-  ['Islamic Studies', 'islamic-studies', 'Religion'],
-  ['History', 'history', 'Humanities'],
-  ['Yoruba', 'yoruba', 'Languages'],
-  ['Igbo', 'igbo', 'Languages'],
-  ['Hausa', 'hausa', 'Languages'],
-];
-
-const SCIENCE_SUBJECTS: SubjectDefinition[] = [
-  ['English Language', 'english', 'Core'],
-  ['General Mathematics', 'mathematics', 'Core'],
-  ['Physics', 'physics', 'Science'],
-  ['Chemistry', 'chemistry', 'Science'],
-  ['Biology', 'biology', 'Science'],
-  ['Agricultural Science', 'agriculture', 'Science'],
-  ['Further Mathematics', 'further-mathematics', 'Science'],
-  ['Geography', 'geography', 'Science'],
-  ['Digital Technologies', 'digital-technologies', 'Technology'],
-  ['Physical Education', 'physical-education', 'Science'],
-  ['Health Education', 'health-education', 'Science'],
-  ['Foods and Nutrition', 'foods-nutrition', 'Science'],
-  ['Technical Drawing', 'technical-drawing', 'Technology'],
-];
-
-const HUMANITIES_SUBJECTS: SubjectDefinition[] = [
-  ['English Language', 'english', 'Core'],
-  ['General Mathematics', 'mathematics', 'Core'],
-  ['Nigerian History', 'history', 'Humanities'],
-  ['Government', 'government', 'Humanities'],
-  ['Christian Religious Studies', 'crs', 'Humanities'],
-  ['Islamic Studies', 'islamic-studies', 'Humanities'],
-  ['Literature in English', 'literature', 'Humanities'],
-  ['French', 'french', 'Languages'],
-  ['Arabic', 'arabic', 'Languages'],
-  ['Visual Arts', 'visual-arts', 'Creative Arts'],
-  ['Music', 'music', 'Creative Arts'],
-];
-
-const BUSINESS_SUBJECTS: SubjectDefinition[] = [
-  ['English Language', 'english', 'Core'],
-  ['General Mathematics', 'mathematics', 'Core'],
-  ['Economics', 'economics', 'Business'],
-  ['Accounting', 'accounting', 'Business'],
-  ['Commerce', 'commerce', 'Business'],
-  ['Marketing', 'marketing', 'Business'],
-];
-
-function createSubject(
-  name: string,
-  code: string,
-  category: string
-): CurriculumSubject {
-  return {
-    id: code,
-    name,
-    code,
-    category,
-    topics: [],
-    sources: [],
-  };
-}
-
-function createCurriculum(
-  id: string,
-  name: string,
-  version: string,
-  source: string,
-  classes: string[],
-  definitions: SubjectDefinition[]
-): Curriculum {
-  return {
-    id,
-    name,
-    version,
-    source,
-    classes,
-    subjects: definitions.map(([name, code, category]) =>
-      createSubject(name, code, category)
-    ),
-  };
-}
+export type ClassLevel = (typeof CLASS_LEVELS)[number];
 
 export const CURRICULUMS: Curriculum[] = [
-  createCurriculum(
-    'nerdc-basic',
-    'NERDC Basic Education Curriculum',
-    '2025 Revised',
-    'NERDC',
-    ['JSS1', 'JSS2', 'JSS3'],
-    JSS_SUBJECTS
-  ),
-  createCurriculum(
-    'nerdc-science',
-    'NERDC Senior Secondary — Science',
-    '2025 Revised',
-    'NERDC',
-    ['SS1', 'SS2', 'SS3'],
-    SCIENCE_SUBJECTS
-  ),
-  createCurriculum(
-    'nerdc-humanities',
-    'NERDC Senior Secondary — Humanities',
-    '2025 Revised',
-    'NERDC',
-    ['SS1', 'SS2', 'SS3'],
-    HUMANITIES_SUBJECTS
-  ),
-  createCurriculum(
-    'nerdc-business',
-    'NERDC Senior Secondary — Business',
-    '2025 Revised',
-    'NERDC',
-    ['SS1', 'SS2', 'SS3'],
-    BUSINESS_SUBJECTS
-  ),
+  {
+    id: 'nerdc-basic-education',
+    name: 'NERDC Basic Education Curriculum',
+    version: '2025 Revised',
+    source: 'NERDC',
+    classes: ['JSS1', 'JSS2', 'JSS3'],
+    subjects: [],
+  },
+  {
+    id: 'nerdc-senior-secondary',
+    name: 'NERDC Senior Secondary Education Curriculum',
+    version: '2025 Revised',
+    source: 'NERDC',
+    classes: ['SS1', 'SS2', 'SS3'],
+    subjects: [],
+  },
 ];
 
 export function getCurriculumsForClass(classLevel: string): Curriculum[] {
@@ -162,202 +52,225 @@ export function getCurriculumsForClass(classLevel: string): Curriculum[] {
   );
 }
 
-export function getCurricula(classLevel: string): string[] {
-  if (classLevel === 'JSS3') {
-    return [
-      'NERDC Basic Education Curriculum',
-      'Junior WAEC / NECO',
-      'BECE — Lagos State',
-    ];
-  }
+export function getCurricula(classLevel?: string): Curriculum[] {
+  if (!classLevel) return CURRICULUMS;
 
-  if (classLevel === 'SS3') {
-    return [
-      'NERDC Senior Secondary Curriculum',
-      'WAEC',
-      'JAMB',
-      'NECO',
-      'GCE',
-    ];
-  }
-
-  return getCurriculumsForClass(classLevel).map(
-    (curriculum) => curriculum.name
+  return CURRICULUMS.filter((curriculum) =>
+    curriculum.classes.includes(classLevel)
   );
 }
 
 export function getDepartments(classLevel: string): string[] {
   if (classLevel.startsWith('JSS')) {
-    return ['General'];
+    return ['Basic Education'];
   }
 
   return ['Science', 'Humanities', 'Business'];
 }
 
-function definitionsForDepartment(
-  department: string
-): SubjectDefinition[] {
-  if (department === 'Humanities') return HUMANITIES_SUBJECTS;
-  if (department === 'Business') return BUSINESS_SUBJECTS;
-  return SCIENCE_SUBJECTS;
-}
-
-export function getSubjects(
+export function definitionsForDepartment(
   classLevel: string,
-  department = 'Science'
+  department: string
 ): string[] {
   if (classLevel.startsWith('JSS')) {
-    return JSS_SUBJECTS.map(([name]) => name);
+    return ['Basic Education'];
   }
 
-  return definitionsForDepartment(department).map(([name]) => name);
+  return [department];
 }
 
-/**
- * Returns every subject available to a class.
- * For senior secondary this merges Science, Humanities and Business
- * instead of accidentally returning only the first department.
+/*
+ * These legacy synchronous helpers are kept temporarily so existing
+ * parts of the application continue to compile while pages migrate
+ * to the Supabase curriculum service.
+ *
+ * New curriculum-aware pages should use:
+ *   fetchClassCurriculum()
+ *   fetchCurriculumSubjects()
+ *   fetchCurriculumTopics()
  */
-export function getSubjectsForClass(
-  classLevel: string,
-  curriculumId?: string
-): CurriculumSubject[] {
-  if (curriculumId) {
-    const curriculum = CURRICULUMS.find(
-      (item) => item.id === curriculumId
-    );
 
-    if (curriculum) {
-      return curriculum.subjects;
-    }
+export function getSubjects(
+  classLevel?: string,
+  department?: string
+): string[] {
+  if (!classLevel) return [];
+
+  if (classLevel.startsWith('JSS')) {
+    return [];
   }
 
-  const curricula = getCurriculumsForClass(classLevel);
-
-  const merged = new Map<string, CurriculumSubject>();
-
-  for (const curriculum of curricula) {
-    for (const subject of curriculum.subjects) {
-      if (!merged.has(subject.code)) {
-        merged.set(subject.code, subject);
-      }
-    }
+  if (department === 'Science') {
+    return [
+      'English Language',
+      'General Mathematics',
+      'Physics',
+      'Chemistry',
+      'Biology',
+      'Agricultural Science',
+      'Further Mathematics',
+      'Geography',
+      'Digital Technologies',
+      'Physical Education',
+      'Health Education',
+      'Foods & Nutrition',
+      'Technical Drawing',
+    ];
   }
 
-  return Array.from(merged.values());
+  if (department === 'Humanities') {
+    return [
+      'English Language',
+      'General Mathematics',
+      'Nigerian History',
+      'Government',
+      'Christian Religious Studies',
+      'Islamic Studies',
+      'Literature in English',
+      'French',
+      'Arabic',
+      'Visual Arts',
+      'Music',
+    ];
+  }
+
+  if (department === 'Business') {
+    return [
+      'English Language',
+      'General Mathematics',
+      'Economics',
+      'Accounting',
+      'Commerce',
+      'Marketing',
+    ];
+  }
+
+  return [];
+}
+
+export function getSubjectsForClass(classLevel: string): string[] {
+  return getSubjects(classLevel);
 }
 
 export function getSubject(
   subjectName: string,
-  classLevel = 'SS3'
+  classLevel?: string
 ): CurriculumSubject | undefined {
-  const target = subjectName.trim().toLowerCase();
+  const subjects = getSubjects(classLevel);
+  if (!subjects.includes(subjectName)) return undefined;
 
-  return getSubjectsForClass(classLevel).find(
-    (subject) =>
-      subject.name.toLowerCase() === target ||
-      subject.code.toLowerCase() === target
-  );
+  return {
+    id: subjectName.toLowerCase().replace(/\s+/g, '-'),
+    name: subjectName,
+    code: subjectName.toUpperCase().replace(/\s+/g, '_'),
+    category: classLevel?.startsWith('JSS')
+      ? 'Basic Education'
+      : 'Senior Secondary',
+    topics: [],
+    sources: [],
+  };
 }
 
 export function getTopics(
-  classLevel: string,
-  subject: string,
-  curriculumId?: string
+  subjectName: string,
+  classLevel?: string
 ): CurriculumTopic[] {
-  return (
-    getSubjectsForClass(classLevel, curriculumId).find(
-      (item) => item.name.toLowerCase() === subject.trim().toLowerCase()
-    )?.topics ?? []
-  );
+  return getSubject(subjectName, classLevel)?.topics ?? [];
 }
 
 export function findTopic(
   subjectName: string,
   topicName: string,
-  classLevel = 'SS3'
+  classLevel?: string
 ): CurriculumTopic | undefined {
-  const target = topicName.trim().toLowerCase();
-
-  return getSubject(subjectName, classLevel)?.topics.find(
+  return getTopics(subjectName, classLevel).find(
     (topic) =>
-      topic.title.toLowerCase() === target ||
-      topic.id.toLowerCase() === target
+      topic.name.toLowerCase() === topicName.toLowerCase() ||
+      topic.title.toLowerCase() === topicName.toLowerCase()
   );
 }
 
-export function allSubjectNames(classLevel = 'SS3'): string[] {
-  return getSubjectsForClass(classLevel).map((subject) => subject.name);
+export function allSubjectNames(): string[] {
+  return [];
 }
 
-export const allSubjects = allSubjectNames;
+export function allSubjects(): CurriculumSubject[] {
+  return [];
+}
 
-export function subjectCategory(subjectName: string): string {
-  const subject = getSubject(subjectName);
-
-  if (subject) return subject.category;
-
-  const lower = subjectName.toLowerCase();
+export function subjectCategory(subject: string): string {
+  const lower = subject.toLowerCase();
 
   if (
-    ['physics', 'chemistry', 'biology', 'agriculture', 'geography'].some(
-      (item) => lower.includes(item)
-    )
+    [
+      'physics',
+      'chemistry',
+      'biology',
+      'agricultural science',
+      'further mathematics',
+      'geography',
+      'technical drawing',
+    ].includes(lower)
   ) {
     return 'Science';
   }
 
   if (
-    ['economics', 'accounting', 'commerce', 'marketing'].some(
-      (item) => lower.includes(item)
-    )
-  ) {
-    return 'Business';
-  }
-
-  if (
-    ['government', 'history', 'literature', 'religious', 'french', 'arabic'].some(
-      (item) => lower.includes(item)
-    )
+    [
+      'government',
+      'nigerian history',
+      'christian religious studies',
+      'islamic studies',
+      'literature in english',
+      'french',
+      'arabic',
+      'visual arts',
+      'music',
+    ].includes(lower)
   ) {
     return 'Humanities';
   }
 
-  return 'Core';
-}
-
-export function subjectIcon(subjectName: string): string {
-  const name = subjectName.toLowerCase();
-
-  if (name.includes('math')) return '🧮';
-  if (name.includes('physics')) return '⚛️';
-  if (name.includes('chemistry')) return '⚗️';
-  if (name.includes('biology')) return '🧬';
-  if (name.includes('english')) return '🌐';
-  if (name.includes('computer') || name.includes('digital')) return '💻';
-  if (name.includes('geography')) return '🌍';
-  if (name.includes('history')) return '🏛️';
-  if (name.includes('government')) return '🏛️';
-  if (name.includes('economics')) return '📈';
-  if (name.includes('account')) return '🧮';
-  if (name.includes('commerce') || name.includes('business')) {
-    return '💼';
+  if (
+    ['economics', 'accounting', 'commerce', 'marketing'].includes(lower)
+  ) {
+    return 'Business';
   }
-  if (name.includes('literature')) return 'BookOpen';
-  if (name.includes('agric')) return 'Sprout';
 
-  return 'BookOpen';
+  return 'Core / Other';
 }
 
-export const classes: Record<
-  string,
-  Record<string, CurriculumSubject>
-> = {};
+export function subjectIcon(subject: string): string {
+  const icons: Record<string, string> = {
+    'English Language': '📖',
+    'General Mathematics': '📐',
+    Mathematics: '📐',
+    Physics: '⚛️',
+    Chemistry: '🧪',
+    Biology: '🧬',
+    'Agricultural Science': '🌱',
+    'Further Mathematics': '📊',
+    Geography: '🌍',
+    'Digital Technologies': '💻',
+    'Technical Drawing': '📏',
+    Economics: '💰',
+    Accounting: '🧾',
+    Commerce: '🏪',
+    Marketing: '📣',
+    Government: '🏛️',
+    'Nigerian History': '📜',
+    'Literature in English': '📚',
+    'Christian Religious Studies': '✝️',
+    'Islamic Studies': '☪️',
+    French: '🇫🇷',
+    Arabic: 'ع',
+    'Visual Arts': '🎨',
+    Music: '🎵',
+  };
 
-for (const level of CLASS_LEVELS) {
-  classes[level] = {};
-
-  for (const subject of getSubjectsForClass(level)) {
-    classes[level][subject.name] = subject;
-  }
+  return icons[subject] ?? '📚';
 }
+
+export const classes = [...CLASS_LEVELS];
+
+export type CurriculumData = ClassCurriculumData;
