@@ -22,7 +22,7 @@ export interface User {
   studentClass?: string;
   department?: string;
   age?: number;
-  role?: 'user' | 'student' | 'teacher' | 'admin' | 'superadmin' | 'owner';
+  role?: 'user' | 'admin' | 'superadmin';
 }
 
 export interface BanRecord {
@@ -56,8 +56,6 @@ export interface AuthContextType {
   user: User | null;
   isAdmin: boolean;
   isSuperAdmin: boolean;
-  isOwner: boolean;
-  isTeacher: boolean;
   isBanned: boolean;
   banRecord: BanRecord | null;
   bannedList: BanRecord[];
@@ -89,20 +87,14 @@ const roleForEmail = (
   const normalized = email.toLowerCase();
 
   if (normalized === OWNER_EMAIL) {
-    return 'owner';
+    return 'superadmin';
   }
 
   if (SUPER_ADMIN_EMAILS.includes(normalized)) {
     return 'superadmin';
   }
 
-  if (
-    role === 'owner' ||
-    role === 'superadmin' ||
-    role === 'admin' ||
-    role === 'teacher' ||
-    role === 'student'
-  ) {
+  if (role === 'admin' || role === 'superadmin') {
     return role;
   }
 
@@ -351,32 +343,23 @@ export const AuthProvider: React.FC<{
     };
   }, []);
 
-  const normalizedUserEmail =
-    user?.email.toLowerCase() || '';
-
-  const isOwner =
-    Boolean(user) &&
-    (
-      user?.role === 'owner' ||
-      normalizedUserEmail === OWNER_EMAIL
-    );
-
   const isSuperAdmin =
     Boolean(user) &&
     (
-      isOwner ||
       user?.role === 'superadmin' ||
-      SUPER_ADMIN_EMAILS.includes(normalizedUserEmail)
+      user?.email.toLowerCase() ===
+        OWNER_EMAIL ||
+      SUPER_ADMIN_EMAILS.includes(
+        user?.email.toLowerCase() || ''
+      )
     );
 
   const isAdmin =
     isSuperAdmin ||
-    adminList.includes(normalizedUserEmail) ||
+    adminList.includes(
+      user?.email.toLowerCase() || ''
+    ) ||
     user?.role === 'admin';
-
-  const isTeacher =
-    Boolean(user) &&
-    user?.role === 'teacher';
 
   const currentBan = user
     ? bannedList.find(
@@ -726,8 +709,6 @@ export const AuthProvider: React.FC<{
         user,
         isAdmin,
         isSuperAdmin,
-        isOwner,
-        isTeacher,
         isBanned,
         banRecord,
         bannedList,

@@ -19,47 +19,12 @@ import About from './pages/About';
 import Updates from './pages/Updates';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
-import OwnerDashboard from './pages/OwnerDashboard';
-import OwnerSecurity from './pages/OwnerSecurity';
-import OwnerAnalytics from './pages/OwnerAnalytics';
-import OwnerSettings from './pages/OwnerSettings';
-import SuperAdminDashboard from './pages/SuperAdminDashboard';
-import UserManagement from './pages/UserManagement';
-import PlatformControl from './pages/PlatformControl';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminReports from './pages/AdminReports';
-import TeacherDashboard from './pages/TeacherDashboard';
-
 import { Layout as AppLayout } from './components/Layout';
 
 import { 
   Home, MessageSquare, BookOpen, Award, Shield, User as UserIcon, LogOut, 
   Sparkles, Mail, Lock, LogIn, Globe, CheckCircle2, RefreshCw, Send, Users, Key 
 } from 'lucide-react';
-
-
-const RankGuard: React.FC<{
-  allowed: Array<'owner' | 'superadmin' | 'admin' | 'teacher'>;
-  children: React.ReactNode;
-}> = ({ allowed, children }) => {
-  const { user, isOwner, isSuperAdmin, isAdmin, isTeacher } = useAuth();
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  const rankAllowed =
-    (allowed.includes('owner') && isOwner) ||
-    (allowed.includes('superadmin') && isSuperAdmin && !isOwner) ||
-    (allowed.includes('admin') && isAdmin && !isSuperAdmin) ||
-    (allowed.includes('teacher') && isTeacher);
-
-  if (!rankAllowed) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <>{children}</>;
-};
 
 // --- GEMINI SERVICE ---
 // Calls go through our own /api/chat serverless function (see
@@ -463,20 +428,6 @@ export const App = () => {
                 </RequireAuth>
               }
             />
-            <Route path="/owner" element={<RankGuard allowed={['owner']}><OwnerDashboard /></RankGuard>} />
-            <Route path="/owner/security" element={<RankGuard allowed={['owner']}><OwnerSecurity /></RankGuard>} />
-            <Route path="/owner/analytics" element={<RankGuard allowed={['owner']}><OwnerAnalytics /></RankGuard>} />
-            <Route path="/owner/settings" element={<RankGuard allowed={['owner']}><OwnerSettings /></RankGuard>} />
-
-            <Route path="/superadmin" element={<RankGuard allowed={['superadmin', 'owner']}><SuperAdminDashboard /></RankGuard>} />
-            <Route path="/superadmin/users" element={<RankGuard allowed={['superadmin', 'owner']}><UserManagement /></RankGuard>} />
-            <Route path="/superadmin/platform" element={<RankGuard allowed={['superadmin', 'owner']}><PlatformControl /></RankGuard>} />
-
-            <Route path="/admin/dashboard" element={<RankGuard allowed={['admin', 'superadmin', 'owner']}><AdminDashboard /></RankGuard>} />
-            <Route path="/admin/reports" element={<RankGuard allowed={['admin', 'superadmin', 'owner']}><AdminReports /></RankGuard>} />
-
-            <Route path="/teacher" element={<RankGuard allowed={['teacher']}><TeacherDashboard /></RankGuard>} />
-
           </Route>
 
           {/* Friendly fallbacks */}

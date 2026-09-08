@@ -13,22 +13,6 @@ type Update = {
 
 const updates: Update[] = [
   {
-    version: 'v1.1.6',
-    date: 'September 2026',
-    title: 'Rank-Based Access & Dashboards',
-    status: 'Current',
-    items: [
-      { type: 'Added', text: 'Added Owner rank with four protected owner-only pages.' },
-      { type: 'Added', text: 'Added Super Admin rank with three protected administration pages.' },
-      { type: 'Added', text: 'Added Admin rank with two protected administration pages.' },
-      { type: 'Added', text: 'Added Teacher rank with a protected Teacher Dashboard.' },
-      { type: 'Added', text: 'Students and regular Users do not receive rank-only pages.' },
-      { type: 'Improved', text: 'Added rank-aware route protection so protected pages cannot be opened by unauthorized ranks.' },
-      { type: 'Improved', text: 'Extended the authentication context with Owner and Teacher access states.' },
-    ],
-  },
-
-  {
     version: 'v1.1.5',
     date: 'September 2026',
     title: 'External Examination Curricula',
