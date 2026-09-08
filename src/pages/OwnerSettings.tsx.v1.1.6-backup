@@ -1,0 +1,7 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Settings, ArrowLeft } from 'lucide-react';
+
+export default function OwnerSettings() {
+ return <main className="mx-auto max-w-5xl p-4 sm:p-6"><div className="flex items-center gap-3"><Settings size={28}/><h1 className="text-2xl font-bold">Owner Settings</h1></div><p className="mt-2 text-white/50">Settings reserved for the platform owner.</p><div className="mt-6 space-y-4"><section className="rounded-2xl border border-white/10 bg-white/5 p-5"><h2 className="font-semibold">Platform Configuration</h2><p className="mt-2 text-sm text-white/50">Owner-only configuration controls belong here.</p></section><section className="rounded-2xl border border-white/10 bg-white/5 p-5"><h2 className="font-semibold">Rank Management</h2><p className="mt-2 text-sm text-white/50">Manage trusted administration roles from a secure backend workflow.</p></section></div><Link to="/owner" className="mt-6 inline-flex items-center gap-2 text-sm text-white/60 hover:text-white"><ArrowLeft size={16}/> Back to Owner Dashboard</Link></main>;
+}

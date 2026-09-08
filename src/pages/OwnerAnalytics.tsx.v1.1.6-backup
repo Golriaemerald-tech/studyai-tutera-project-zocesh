@@ -1,0 +1,8 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { BarChart3, ArrowLeft } from 'lucide-react';
+
+export default function OwnerAnalytics() {
+ const stats=[['Platform','Zocesh Study AI'],['Rank system','Active'],['Protected areas','10'],['Student access','Standard']];
+ return <main className="mx-auto max-w-5xl p-4 sm:p-6"><div className="flex items-center gap-3"><BarChart3 size={28}/><h1 className="text-2xl font-bold">Owner Analytics</h1></div><p className="mt-2 text-white/50">Platform overview and ownership-level metrics.</p><div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{stats.map(([a,b])=><div key={a} className="rounded-2xl border border-white/10 bg-white/5 p-5"><p className="text-sm text-white/50">{a}</p><p className="mt-2 font-semibold">{b}</p></div>)}</div><p className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/50">Detailed user, study, usage and performance analytics can be connected here as the platform grows.</p><Link to="/owner" className="mt-6 inline-flex items-center gap-2 text-sm text-white/60 hover:text-white"><ArrowLeft size={16}/> Back to Owner Dashboard</Link></main>;
+}

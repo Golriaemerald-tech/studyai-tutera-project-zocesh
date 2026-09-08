@@ -1,0 +1,7 @@
+import React from 'react';
+import { BookOpen, ClipboardList, Users, BarChart3 } from 'lucide-react';
+
+export default function TeacherDashboard() {
+ const cards=[['Classes','Manage teaching groups and assigned students.',Users],['Assignments','Create and review learning activities.',ClipboardList],['Resources','Organize teaching materials and study resources.',BookOpen],['Progress','Review student learning progress.',BarChart3]];
+ return <main className="mx-auto max-w-5xl p-4 sm:p-6"><div className="flex items-center gap-3"><BookOpen size={28}/><h1 className="text-2xl font-bold">Teacher Dashboard</h1></div><p className="mt-2 text-white/50">Your teaching and student-support workspace.</p><div className="mt-6 grid gap-4 sm:grid-cols-2">{cards.map(([title,text,Icon])=><div key={String(title)} className="rounded-2xl border border-white/10 bg-white/5 p-5"><Icon size={24}/><h2 className="mt-3 font-semibold">{String(title)}</h2><p className="mt-1 text-sm text-white/50">{String(text)}</p></div>)}</div></main>;
+}

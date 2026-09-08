@@ -1,0 +1,8 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { FileText, ArrowLeft } from 'lucide-react';
+
+export default function AdminReports() {
+ return <main className="mx-auto max-w-5xl p-4 sm:p-6"><div className="flex items-center gap-3"><FileText size={28}/><h1 className="text-2xl font-bold">Admin Reports</h1></div><p className="mt-2 text-white/50">Reports available to authorized administrators.</p><div className="mt-6 grid gap-4 sm:grid-cols-2"><Card title="Account Reports" text="Review account-related reports and moderation events."/><Card title="Study Reports" text="Review future study activity and issue reports."/><Card title="System Reports" text="Review application and platform events."/><Card title="Audit Reports" text="Prepare administrative audit information." /></div><Link to="/admin/dashboard" className="mt-6 inline-flex items-center gap-2 text-sm text-white/60 hover:text-white"><ArrowLeft size={16}/> Back</Link></main>;
+}
+function Card({title,text}:{title:string;text:string}){return <div className="rounded-2xl border border-white/10 bg-white/5 p-5"><h2 className="font-semibold">{title}</h2><p className="mt-2 text-sm text-white/50">{text}</p></div>;}

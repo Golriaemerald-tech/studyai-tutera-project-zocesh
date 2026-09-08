@@ -1,46 +1,17 @@
-import React from 'react';
-import { Shield, Users, BarChart3, Settings, BookOpen, ClipboardList } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Crown, Shield, BarChart3, Settings } from "lucide-react";
 
-const ICONS: Record<string, React.ElementType> = {
-  'Owner Dashboard': Shield,
-  'Owner Security': Shield,
-  'Owner Analytics': BarChart3,
-  'Owner Settings': Settings,
-  'Super Admin Dashboard': Shield,
-  'User Management': Users,
-  'Platform Control': Settings,
-  'Admin Dashboard': ClipboardList,
-  'Admin Reports': BarChart3,
-  'Teacher Dashboard': BookOpen,
-};
+const items=[
+["Security","Security and access oversight.","/owner/security",Shield],
+["Analytics","Platform performance and activity.","/owner/analytics",BarChart3],
+["Owner Settings","Owner-only platform configuration.","/owner/settings",Settings],
+];
 
-export default function OwnerDashboard() {{
-  const Icon = ICONS['Owner Dashboard'] || Shield;
-
-  return (
-    <div className="min-h-screen p-4 md:p-6">
-      <div className="mx-auto max-w-5xl">
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl">
-          <div className="flex items-center gap-4">
-            <div className="rounded-2xl bg-teal-500/10 p-3 text-teal-400">
-              <Icon size={24} />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white">Owner Dashboard</h1>
-              <p className="mt-1 text-sm text-white/50">Owner-only platform overview and controls.</p>
-            </div>
-          </div>
-
-          <div className="mt-8 rounded-2xl border border-white/10 bg-black/10 p-5">
-            <p className="text-sm text-white/70">
-              This protected Zocesh Study AI page is part of version 1.1.6.
-            </p>
-            <p className="mt-2 text-xs text-white/40">
-              Additional controls and data will be connected here as the platform expands.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}}
+export default function OwnerDashboard(){
+ return <main className="mx-auto max-w-6xl p-5 sm:p-8">
+  <header className="mb-8"><div className="flex items-center gap-3"><Crown/><h1 className="text-3xl font-bold">Owner Dashboard</h1></div><p className="mt-2 text-white/50">Complete Zocesh Study AI ownership workspace.</p></header>
+  <div className="grid gap-5 sm:grid-cols-3">{items.map(([title,text,to,Icon])=><Link key={String(to)} to={String(to)} className="rounded-2xl border border-white/10 bg-white/5 p-6 hover:bg-white/10"><Icon size={25}/><h2 className="mt-4 font-semibold">{String(title)}</h2><p className="mt-2 text-sm text-white/50">{String(text)}</p></Link>)}</div>
+  <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6"><h2 className="font-semibold">Owner Access</h2><p className="mt-2 text-sm text-white/50">This page is restricted to the configured Owner account.</p></section>
+ </main>;
+}

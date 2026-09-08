@@ -1,0 +1,8 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Shield, Users, Settings, FileText } from 'lucide-react';
+
+export default function SuperAdminDashboard() {
+ const cards=[['User Management','/superadmin/users',Users,'Manage administration-facing user controls.'],['Platform Control','/superadmin/platform',Settings,'Review platform administration controls.'],['Admin Reports','/admin/reports',FileText,'Open administration reporting.']];
+ return <main className="mx-auto max-w-5xl p-4 sm:p-6"><div className="flex items-center gap-3"><Shield size={28}/><h1 className="text-2xl font-bold">Super Admin Dashboard</h1></div><p className="mt-2 text-white/50">High-level administration workspace.</p><div className="mt-6 grid gap-4 sm:grid-cols-2">{cards.map(([title,to,Icon,text])=><Link key={String(to)} to={String(to)} className="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10"><Icon size={24}/><h2 className="mt-3 font-semibold">{String(title)}</h2><p className="mt-1 text-sm text-white/50">{String(text)}</p></Link>)}</div></main>;
+}

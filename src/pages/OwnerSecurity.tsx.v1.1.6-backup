@@ -1,0 +1,18 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Shield, ArrowLeft } from 'lucide-react';
+
+export default function OwnerSecurity() {
+ return <Page title="Owner Security" subtitle="Owner-level security controls and access oversight.">
+   <div className="grid gap-4 sm:grid-cols-2">
+    <Card title="Access Protection" text="Protected rank routes are restricted by the authenticated user's rank." />
+    <Card title="Account Security" text="Review security-sensitive account and administration settings before production changes." />
+    <Card title="Role Protection" text="Owner and Super Admin privileges should only be granted through trusted administration controls." />
+    <Card title="Audit Readiness" text="Use this area for future security logs, access reviews and administrative audits." />
+   </div>
+   <Back />
+ </Page>;
+}
+function Card({title,text}:{title:string;text:string}) { return <div className="rounded-2xl border border-white/10 bg-white/5 p-5"><h2 className="font-semibold">{title}</h2><p className="mt-2 text-sm text-white/50">{text}</p></div>; }
+function Back(){return <Link to="/owner" className="mt-6 inline-flex items-center gap-2 text-sm text-white/60 hover:text-white"><ArrowLeft size={16}/> Back to Owner Dashboard</Link>;}
+function Page({title,subtitle,children}:{title:string;subtitle:string;children:React.ReactNode}) {return <main className="mx-auto max-w-5xl p-4 sm:p-6"><h1 className="text-2xl font-bold">{title}</h1><p className="mt-2 mb-6 text-white/50">{subtitle}</p>{children}</main>;}

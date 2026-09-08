@@ -1,0 +1,7 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Users, ArrowLeft } from 'lucide-react';
+
+export default function UserManagement() {
+ return <main className="mx-auto max-w-5xl p-4 sm:p-6"><div className="flex items-center gap-3"><Users size={28}/><h1 className="text-2xl font-bold">User Management</h1></div><p className="mt-2 text-white/50">Super Admin user-management workspace.</p><div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5"><h2 className="font-semibold">Administration tools</h2><p className="mt-2 text-sm text-white/50">User search, rank assignment, account status and moderation controls can be connected here using secure Supabase policies.</p></div><Link to="/superadmin" className="mt-6 inline-flex items-center gap-2 text-sm text-white/60 hover:text-white"><ArrowLeft size={16}/> Back</Link></main>;
+}

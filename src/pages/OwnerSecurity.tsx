@@ -1,46 +1,17 @@
-import React from 'react';
-import { Shield, Users, BarChart3, Settings, BookOpen, ClipboardList } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Shield, ArrowLeft } from "lucide-react";
 
-const ICONS: Record<string, React.ElementType> = {
-  'Owner Dashboard': Shield,
-  'Owner Security': Shield,
-  'Owner Analytics': BarChart3,
-  'Owner Settings': Settings,
-  'Super Admin Dashboard': Shield,
-  'User Management': Users,
-  'Platform Control': Settings,
-  'Admin Dashboard': ClipboardList,
-  'Admin Reports': BarChart3,
-  'Teacher Dashboard': BookOpen,
-};
-
-export default function OwnerSecurity() {{
-  const Icon = ICONS['Owner Security'] || Shield;
-
-  return (
-    <div className="min-h-screen p-4 md:p-6">
-      <div className="mx-auto max-w-5xl">
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl">
-          <div className="flex items-center gap-4">
-            <div className="rounded-2xl bg-teal-500/10 p-3 text-teal-400">
-              <Icon size={24} />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white">Owner Security</h1>
-              <p className="mt-1 text-sm text-white/50">Owner-only security and platform protection controls.</p>
-            </div>
-          </div>
-
-          <div className="mt-8 rounded-2xl border border-white/10 bg-black/10 p-5">
-            <p className="text-sm text-white/70">
-              This protected Zocesh Study AI page is part of version 1.1.6.
-            </p>
-            <p className="mt-2 text-xs text-white/40">
-              Additional controls and data will be connected here as the platform expands.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}}
+export default function OwnerSecurity(){
+ return <Page title="Owner Security" icon={<Shield/>} subtitle="Security controls reserved for the Owner.">
+  <Grid items={[
+   ["Access Protection","Review protected rank areas and authorization controls."],
+   ["Role Security","Owner and administration privileges must be assigned through trusted controls."],
+   ["Account Protection","Review authentication and account-security configuration."],
+   ["Audit Controls","Future security events and administrative audit logs can be managed here."]
+  ]}/><Back/>
+ </Page>;
+}
+function Grid({items}:{items:string[][]}){return <div className="grid gap-4 sm:grid-cols-2">{items.map(([a,b])=><div key={a} className="rounded-2xl border border-white/10 bg-white/5 p-5"><h2 className="font-semibold">{a}</h2><p className="mt-2 text-sm text-white/50">{b}</p></div>)}</div>}
+function Page({title,icon,subtitle,children}:{title:string;icon:React.ReactNode;subtitle:string;children:React.ReactNode}){return <main className="mx-auto max-w-6xl p-5 sm:p-8"><div className="flex items-center gap-3">{icon}<h1 className="text-3xl font-bold">{title}</h1></div><p className="mt-2 mb-7 text-white/50">{subtitle}</p>{children}</main>}
+function Back(){return <Link to="/owner" className="mt-7 inline-flex items-center gap-2 text-sm text-white/60 hover:text-white"><ArrowLeft size={16}/>Back to Owner Dashboard</Link>}
