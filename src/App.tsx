@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, FormEvent } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import DMS from "./pages/DMS";
 import { AuthProvider, useAuth, GoogleCredentialResponse, User } from './context/AuthContext';
 import { ask, GeminiError, buildTutorInstruction, type StudentProfile } from './lib/gemini';
 import { renderMarkdown } from './lib/markdown';
@@ -481,7 +482,8 @@ export const App = () => {
 
           {/* Friendly fallbacks */}
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+              <Route path="/dms" element={<DMS />} />
+</Routes>
       </BrowserRouter>
   );
 };

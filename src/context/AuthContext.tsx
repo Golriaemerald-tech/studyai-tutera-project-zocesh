@@ -128,6 +128,7 @@ const profileToUser = (
       email.split('@')[0] ||
       'Student',
     nickname:
+      profile?.nickname ||
       authUser?.user_metadata?.nickname ||
       profile?.display_name ||
       undefined,

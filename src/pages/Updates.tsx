@@ -13,6 +13,23 @@ type Update = {
 
 const updates: Update[] = [
   {
+    version: 'v1.1.7',
+    date: 'September 2026',
+    title: 'Direct Messages & Personal Identity',
+    status: 'Current',
+    items: [
+      { type: 'Added', text: 'Added Direct Messages so users can privately message other users one-to-one.' },
+      { type: 'Added', text: 'Added nickname settings so users can choose how they are identified across the platform.' },
+      { type: 'Added', text: 'Nicknames are used as the identity shown in Community, Direct Messages and Tutor AI.' },
+      { type: 'Added', text: 'Added shared identity handling so the same user identity is used consistently across chat experiences.' },
+      { type: 'Improved', text: 'Owner, Super Admin and Admin accounts now display their rank instead of their personal nickname in chat and messaging.' },
+      { type: 'Improved', text: 'Direct Messages support realtime message updates.' },
+      { type: 'Improved', text: 'Added nickname-aware Tutor AI interactions.' },
+      { type: 'Fixed', text: 'Fixed user identity falling back to the profile display name instead of the saved nickname.' },
+    ],
+  },
+
+  {
     version: 'v1.1.6',
     date: 'September 2026',
     title: 'Rank-Based Access & Dashboards',

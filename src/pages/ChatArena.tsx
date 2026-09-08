@@ -4,6 +4,7 @@ import { callGeminiAPI } from '../utils/gemini';
 import { buildTutorInstruction } from '../lib/gemini';
 import { renderMarkdown } from '../lib/markdown';
 import { supabase } from '../lib/supabase';
+import { getDisplayIdentity } from '../lib/displayIdentity';
 import { Send, Trash2, MessageSquare, Bot, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -156,7 +157,7 @@ export const ChatArena = () => {
     const { error } = await supabase.from('community_messages').insert({
       sender_id: user.id,
       content: userMsgText,
-      sender_name: user.name,
+      sender_name: getDisplayIdentity(user),
       sender_email: user.email,
       sender_picture: user.picture,
       is_bot: false,
@@ -173,7 +174,7 @@ export const ChatArena = () => {
 
     try {
       const aiResponse = await callGeminiAPI(
-        `User ${user.name} said in group chat: "${userMsgText}". Respond helpfully and concisely as StudyBot AI in under 3 sentences.`,
+        `User ${getDisplayIdentity(user)} said in group chat: "${userMsgText}". Respond helpfully and concisely as StudyBot AI in under 3 sentences.`,
         buildTutorInstruction(user, {
           persona:
             'You are StudyBot AI, an intelligent, encouraging educational assistant in a student group chat.',
