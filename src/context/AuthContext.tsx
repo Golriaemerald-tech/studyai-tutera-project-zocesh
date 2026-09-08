@@ -6,7 +6,7 @@ import React, {
 } from 'react';
 import { supabase } from '../lib/supabase';
 
-export const OWNER_EMAIL = 'embelmpk@gmail.com';
+export const OWNER_EMAIL = 'embelmpklet@gmail.com';
 
 export const SUPER_ADMIN_EMAILS = [
   'uceebel@gmail.com',
