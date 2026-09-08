@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getDisplayIdentity } from '../lib/displayIdentity';
 import {
   Menu,
   X,
@@ -25,7 +26,7 @@ import {
 } from 'lucide-react';
 
 export const Layout: React.FC = () => {
-  const { user, logout, isAdmin, isSuperAdmin } = useAuth();
+  const { user, logout, isAdmin, isSuperAdmin, isOwner, isTeacher } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -49,6 +50,7 @@ export const Layout: React.FC = () => {
     { label: 'Progress', path: '/progress', icon: BarChart3 },
     { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
     { label: 'Community', path: '/community', icon: MessageSquare },
+    { label: 'Direct Messages', path: '/dms', icon: MessageSquare },
     { label: 'Profile', path: '/profile', icon: User },
     { label: 'Settings', path: '/settings', icon: Settings },
     { label: 'About Zocesh StudyAI', path: '/about', icon: Info },
@@ -110,7 +112,7 @@ export const Layout: React.FC = () => {
                 />
                 <div className="hidden text-right sm:block">
                   <p className="text-xs font-bold text-slate-200">
-                    {user.nickname || user.name}
+                    {getDisplayIdentity(user)}
                   </p>
                   <p className="text-[10px] text-brand-300">
                     {user.studentClass || 'Student'}
@@ -169,7 +171,7 @@ export const Layout: React.FC = () => {
                 />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-bold text-slate-100">
-                    {user.nickname || user.name}
+                    {getDisplayIdentity(user)}
                   </p>
                   <p className="text-xs text-brand-300">
                     {user.studentClass || 'Student'}
@@ -208,22 +210,95 @@ export const Layout: React.FC = () => {
                 );
               })}
 
-              {(isAdmin || isSuperAdmin) && (
+              {(isOwner || isSuperAdmin || isAdmin || isTeacher) && (
                 <>
                   <div className="my-3 border-t border-surface-border" />
-                  <Link
-                    to="/admin"
-                    onClick={() => setMenuOpen(false)}
-                    className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                      isActive('/admin')
-                        ? 'border border-rose-400/20 bg-rose-500/10 text-rose-300'
-                        : 'text-slate-400 hover:bg-surface-raised hover:text-slate-100'
-                    }`}
-                  >
-                    <Shield size={18} />
-                    <span className="flex-1">Admin Hub</span>
-                    <ChevronRight size={14} />
-                  </Link>
+
+                  {isOwner && (
+                    <>
+                      <Link
+                        to="/owner"
+                        onClick={() => setMenuOpen(false)}
+                        className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                          isActive('/owner')
+                            ? 'border border-amber-400/20 bg-amber-500/10 text-amber-300'
+                            : 'text-slate-400 hover:bg-surface-raised hover:text-slate-100'
+                        }`}
+                      >
+                        <Shield size={18} />
+                        <span className="flex-1">Owner Dashboard</span>
+                        <ChevronRight size={14} />
+                      </Link>
+
+                      <Link
+                        to="/owner/security"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-surface-raised hover:text-slate-100"
+                      >
+                        <Shield size={18} />
+                        <span className="flex-1">Owner Security</span>
+                        <ChevronRight size={14} />
+                      </Link>
+
+                      <Link
+                        to="/owner/analytics"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-surface-raised hover:text-slate-100"
+                      >
+                        <BarChart3 size={18} />
+                        <span className="flex-1">Owner Analytics</span>
+                        <ChevronRight size={14} />
+                      </Link>
+                    </>
+                  )}
+
+                  {isSuperAdmin && !isOwner && (
+                    <Link
+                      to="/superadmin"
+                      onClick={() => setMenuOpen(false)}
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                        isActive('/superadmin')
+                          ? 'border border-violet-400/20 bg-violet-500/10 text-violet-300'
+                          : 'text-slate-400 hover:bg-surface-raised hover:text-slate-100'
+                      }`}
+                    >
+                      <Shield size={18} />
+                      <span className="flex-1">Super Admin Dashboard</span>
+                      <ChevronRight size={14} />
+                    </Link>
+                  )}
+
+                  {isTeacher && !isAdmin && !isSuperAdmin && !isOwner && (
+                    <Link
+                      to="/teacher"
+                      onClick={() => setMenuOpen(false)}
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                        isActive('/teacher')
+                          ? 'border border-blue-400/20 bg-blue-500/10 text-blue-300'
+                          : 'text-slate-400 hover:bg-surface-raised hover:text-slate-100'
+                      }`}
+                    >
+                      <BookOpen size={18} />
+                      <span className="flex-1">Teacher Dashboard</span>
+                      <ChevronRight size={14} />
+                    </Link>
+                  )}
+
+                  {(isAdmin || isSuperAdmin || isOwner) && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setMenuOpen(false)}
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                        isActive('/admin')
+                          ? 'border border-rose-400/20 bg-rose-500/10 text-rose-300'
+                          : 'text-slate-400 hover:bg-surface-raised hover:text-slate-100'
+                      }`}
+                    >
+                      <Shield size={18} />
+                      <span className="flex-1">Admin Hub</span>
+                      <ChevronRight size={14} />
+                    </Link>
+                  )}
                 </>
               )}
             </nav>
