@@ -11,7 +11,27 @@ type Update = {
   }[];
 };
 
-const updates: Update[] = [
+const updates: Update[
+
+] = [
+  {
+    version: 'v1.1.7.3',
+    date: 'September 2026',
+    title: 'Direct Messages, Identity & Platform Fixes',
+    status: 'Current',
+    items: [
+      { type: 'Added', text: 'Added Direct Messages for private one-to-one conversations.' },
+      { type: 'Added', text: 'Added nickname support so users can choose how they are identified across the platform.' },
+      { type: 'Improved', text: 'Community, Direct Messages and Tutor AI now use the shared user identity system.' },
+      { type: 'Improved', text: 'Owner, Super Admin and Admin accounts display their platform rank in messaging and chat.' },
+      { type: 'Improved', text: 'Direct Messages support realtime message updates.' },
+      { type: 'Fixed', text: 'Fixed Direct Message row-level security recursion between DM threads, members and messages.' },
+      { type: 'Fixed', text: 'Fixed DM thread creation being blocked by row-level security when creating a new conversation.' },
+      { type: 'Fixed', text: 'Fixed the mobile Direct Messages layout where selecting a user did not reveal the conversation panel.' },
+      { type: 'Fixed', text: 'Fixed user identity falling back to the profile display name instead of the saved nickname.' },
+    ],
+  },
+
   {
     version: 'v1.1.7',
     date: 'September 2026',
