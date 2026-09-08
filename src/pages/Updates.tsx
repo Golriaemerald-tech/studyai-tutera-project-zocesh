@@ -13,6 +13,29 @@ type Update = {
 
 const updates: Update[] = [
   {
+    version: 'v1.1.5',
+    date: 'September 2026',
+    title: 'External Examination Curricula',
+    status: 'Current',
+    items: [
+      { type: 'Added', text: 'Added Junior WAEC / BECE preparation for JSS3.' },
+      { type: 'Added', text: 'Added NECO BECE preparation for JSS3.' },
+      { type: 'Added', text: 'Added Lagos State BECE preparation for JSS3.' },
+      { type: 'Added', text: 'Added WAEC preparation for SS3.' },
+      { type: 'Added', text: 'Added NECO SSCE preparation for SS3.' },
+      { type: 'Added', text: 'Added GCE preparation for SS3.' },
+      { type: 'Added', text: 'Added JAMB / UTME preparation for SS3.' },
+      { type: 'Added', text: 'Added NABTEB preparation for SS3.' },
+      { type: 'Improved', text: 'Study Mode now uses the selected examination curriculum by its proper name when generating questions.' },
+      { type: 'Improved', text: 'External examination curricula automatically determine the examination scope.' },
+      { type: 'Improved', text: 'The Topic field is hidden when an external examination curriculum is selected because a separate topic is not required.' },
+      { type: 'Improved', text: 'The Topic field automatically returns when the NERDC curriculum is selected.' },
+      { type: 'Fixed', text: 'Fixed Study Mode showing only the NERDC curriculum for SS3.' },
+      { type: 'Fixed', text: 'Fixed external examination selections not being available from the curriculum dropdown.' },
+    ],
+  },
+
+  {
     version: 'v1.1.4',
     date: 'September 2026',
     title: 'External Exam Curricula & Study Mode Improvements',

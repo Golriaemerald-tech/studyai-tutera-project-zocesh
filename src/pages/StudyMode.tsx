@@ -83,6 +83,11 @@ export const StudyMode = () => {
 
   const curriculumName = selectedCurriculum?.name ?? curriculum;
 
+  const isExternalCurriculum =
+    selectedCurriculum?.id !== undefined &&
+    selectedCurriculum.id !== 'nerdc-basic-education' &&
+    selectedCurriculum.id !== 'nerdc-senior-secondary';
+
   function changeClass(value: string) {
     const nextDepartments = getDepartments(value);
     const nextDepartment = nextDepartments[0];
@@ -586,15 +591,27 @@ Return JSON only:
         </label>
       </div>
 
-      <label className="block space-y-2">
-        <span className="text-sm text-white/70">Topic</span>
-        <input
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
-          placeholder="e.g. Quadratic equations"
-          className="w-full rounded-xl border border-white/10 bg-white/5 p-3 text-white outline-none placeholder:text-white/30"
-        />
-      </label>
+{!isExternalCurriculum ? (
+        <label className="block space-y-2">
+          <span className="text-sm text-white/70">Topic</span>
+          <input
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            placeholder="e.g. Quadratic equations"
+            className="w-full rounded-xl border border-white/10 bg-white/5 p-3 text-white outline-none placeholder:text-white/30"
+          />
+        </label>
+      ) : (
+        <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+          <p className="text-sm font-medium text-white">
+            Examination curriculum selected
+          </p>
+          <p className="mt-1 text-xs text-white/50">
+            {curriculumName} will determine the examination scope automatically.
+            You do not need to enter a topic.
+          </p>
+        </div>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-2">

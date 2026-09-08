@@ -120,9 +120,11 @@ export function getCurriculumsForClass(classLevel: string): Curriculum[] {
 }
 
 export function getCurricula(classLevel?: string): Curriculum[] {
-  if (!classLevel) return CURRICULUMS;
+  const allCurricula = [...CURRICULUMS, ...EXTERNAL_CURRICULA];
 
-  return CURRICULUMS.filter((curriculum) =>
+  if (!classLevel) return allCurricula;
+
+  return allCurricula.filter((curriculum) =>
     curriculum.classes.includes(classLevel)
   );
 }
